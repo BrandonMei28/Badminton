@@ -1,0 +1,2515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>COURT — Badminton</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#c8a84b; --accent2:#4b8bc8;
+  --green:#2ea852; --orange:#d4821a; --red:#c83232;
+  --ui:#0d0d0a; --white:#f0ede8; --mid:#8a8a7a;
+  --font-h:'Barlow Condensed',sans-serif;
+  --font-b:'Barlow',sans-serif;
+  --r:6px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#0d0d0a;font-family:var(--font-b);color:var(--white);
+  -webkit-user-select:none; user-select:none;
+  touch-action:none;
+}
+button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+.hidden{display:none!important;}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+
+/* ── MENU ── */
+#s-menu{background:linear-gradient(155deg,#0b1a0e,#0d0d0a 55%,#0a0d1a);}
+.m-bg{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 60% at 15% 85%,rgba(200,168,75,.08),transparent 60%),
+             radial-gradient(ellipse 60% 70% at 85% 15%,rgba(75,139,200,.06),transparent 60%);}
+.m-inner{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:2.4rem;}
+.m-eye{font-family:var(--font-h);font-size:.82rem;font-weight:600;letter-spacing:.38em;text-transform:uppercase;
+  color:var(--accent);opacity:0;animation:fup .6s .2s forwards;}
+.m-title{font-family:var(--font-h);font-size:clamp(4.5rem,13vw,9rem);font-weight:900;letter-spacing:-.02em;
+  line-height:.9;text-transform:uppercase;opacity:0;animation:fup .7s .35s forwards;
+  text-shadow:0 0 80px rgba(200,168,75,.14);}
+.m-title span{color:var(--accent);}
+.m-tag{font-size:1rem;font-weight:300;color:var(--mid);letter-spacing:.07em;opacity:0;animation:fup .7s .5s forwards;}
+.m-acts{display:flex;flex-direction:column;align-items:center;gap:.75rem;opacity:0;animation:fup .7s .65s forwards;}
+.m-deco{position:absolute;bottom:0;left:0;right:0;height:38%;opacity:.035;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 39px,#fff 39px,#fff 41px),
+             linear-gradient(90deg,transparent 6%,#fff 6%,#fff 6.3%,transparent 6.3%,transparent 93.7%,#fff 93.7%,#fff 94%,transparent 94%);}
+
+/* ── BUTTONS ── */
+.btn{font-family:var(--font-h);font-size:1.05rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  background:var(--accent);color:#0d0d0a;border:none;padding:.95rem 3.2rem;cursor:pointer;border-radius:var(--r);
+  transition:all .18s;box-shadow:0 4px 22px rgba(200,168,75,.28);}
+.btn:hover{background:#d4b55a;transform:translateY(-2px);box-shadow:0 8px 30px rgba(200,168,75,.38);}
+.btn-o{background:transparent;color:var(--mid);border:1px solid rgba(255,255,255,.13);
+  box-shadow:none;padding:.7rem 2.4rem;font-size:.9rem;}
+.btn-o:hover{color:var(--white);border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.05);transform:none;}
+.btn-sm{font-size:.82rem;padding:.65rem 1.8rem;}
+
+/* ── FLOW SCREENS ── */
+.flow{background:linear-gradient(155deg,#0b1a0e,#0d0d0a 55%,#0a0d1a);}
+.fi{width:min(96vw,900px);display:flex;flex-direction:column;gap:1.8rem;}
+.fb{font-family:var(--font-h);font-size:.78rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--mid);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:.4rem;
+  padding:0;transition:color .18s;}
+.fb:hover{color:var(--white);}
+.ft{font-family:var(--font-h);font-size:clamp(2rem,5.5vw,3.2rem);font-weight:900;letter-spacing:-.01em;
+  text-transform:uppercase;line-height:1;}
+.fs{font-size:.88rem;font-weight:300;color:var(--mid);margin-top:.2rem;}
+
+/* ── PLAYER CREATE ── */
+.pc-layout{display:grid;grid-template-columns:1fr 1.3fr;gap:2.5rem;align-items:start;}
+.av-stage{width:200px;height:256px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.av-stage canvas{width:100%;height:100%;}
+.swatch-row{display:flex;gap:.55rem;align-items:center;}
+.sl{font-size:.7rem;color:var(--mid);text-transform:uppercase;letter-spacing:.15em;white-space:nowrap;}
+.sdot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .14s;}
+.sdot.on,.sdot:hover{border-color:var(--accent);transform:scale(1.18);}
+.ksw{width:30px;height:18px;border-radius:3px;cursor:pointer;border:2px solid transparent;transition:all .14s;}
+.ksw.on,.ksw:hover{border-color:var(--accent);}
+.sp{display:flex;flex-direction:column;gap:1.4rem;}
+.stat-row{display:flex;flex-direction:column;gap:.35rem;}
+.slr{display:flex;justify-content:space-between;align-items:center;}
+.sn{font-family:var(--font-h);font-size:.95rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;}
+.sv{font-family:var(--font-h);font-size:1.05rem;font-weight:900;color:var(--accent);min-width:3rem;text-align:right;}
+.star-r{display:flex;gap:3px;}
+.star{width:26px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .1s;}
+.star:hover{transform:scale(1.18);}
+.star svg{width:24px;height:24px;pointer-events:none;}
+.sf{fill:var(--accent);stroke:var(--accent);}
+.sh{fill:url(#hg);stroke:var(--accent);}
+.se{fill:transparent;stroke:rgba(255,255,255,.22);}
+.tmpl-g{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;}
+.tc{padding:.65rem .9rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--r);cursor:pointer;transition:all .14s;}
+.tc:hover,.tc.on{background:rgba(200,168,75,.09);border-color:rgba(200,168,75,.35);}
+.tc:hover .tn,.tc.on .tn{color:var(--accent);}
+.tn{font-family:var(--font-h);font-size:.82rem;font-weight:700;letter-spacing:.06em;}
+.td{font-size:.7rem;color:var(--mid);margin-top:.18rem;}
+
+/* ── MATCH SETUP ── */
+.sg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.4rem;}
+.sg-g{display:flex;flex-direction:column;gap:.7rem;}
+.sg-l{font-family:var(--font-h);font-size:.78rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--mid);padding-bottom:.5rem;border-bottom:1px solid rgba(255,255,255,.08);}
+.so{padding:.85rem 1.1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--r);cursor:pointer;transition:all .14s;text-align:center;}
+.so:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);}
+.so.on{background:rgba(200,168,75,.1);border-color:var(--accent);}
+.sol{font-family:var(--font-h);font-size:1.05rem;font-weight:700;}
+.sos{font-size:.72rem;color:var(--mid);margin-top:.18rem;}
+.de .sol{color:#6bcf8a;}.dn .sol{color:#6ab0e8;}.dh .sol{color:#e8a84b;}.dx .sol{color:#e85555;}
+
+/* ── GAME SCREEN ── */
+#s-game{background:#000;padding:0;justify-content:flex-start;}
+#s-game canvas{display:block;touch-action:none;}
+#gc{position:absolute;inset:0;width:100%;height:100%;display:block;}
+
+/* ── HUD ── */
+#hud{position:fixed;top:0;left:0;right:0;z-index:50;height:56px;
+  background:linear-gradient(to bottom,rgba(0,0,0,.72),transparent);
+  display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;pointer-events:none;}
+.hb{display:flex;flex-direction:column;justify-content:center;}
+.hn{font-family:var(--font-h);font-size:.75rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:rgba(240,237,232,.6);}
+.hs{font-family:var(--font-h);font-size:2rem;font-weight:900;line-height:1;}
+.hs.y{color:var(--accent);}
+.hs.c{color:var(--accent2);text-align:right;}
+.hc{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.hsets{display:flex;gap:.8rem;}
+.hsd{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.15);}
+.hsd.wp{background:var(--accent);}.hsd.wc{background:var(--accent2);}
+.hml{font-family:var(--font-h);font-size:.62rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--mid);}
+#hud-pause-btn{pointer-events:all;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);
+  color:rgba(255,255,255,.8);padding:4px 14px;border-radius:4px;cursor:pointer;
+  font-size:.72rem;font-family:var(--font-h);letter-spacing:.1em;
+  position:fixed;top:62px;right:1.2rem;z-index:55;}
+#hud-pause-btn:hover{background:rgba(255,255,255,.16);}
+
+/* ── SHOT METER ── */
+#meter-wrap{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:7px;z-index:60;
+  pointer-events:none;opacity:0;transition:opacity .12s;}
+#meter-wrap.vis{opacity:1;}
+.mlbl{font-family:var(--font-h);font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.7);}
+.mtrack{width:210px;height:18px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.2);
+  border-radius:9px;overflow:hidden;position:relative;}
+.mzones{position:absolute;inset:0;display:flex;border-radius:9px;overflow:hidden;}
+.zrl,.zrr{background:rgba(200,50,50,.55);}
+.zol,.zor{background:rgba(212,130,26,.55);}
+.zg{background:rgba(46,168,82,.55);flex:1;}
+.mneedle{position:absolute;top:0;bottom:0;width:3px;background:#fff;border-radius:2px;
+  box-shadow:0 0 5px rgba(255,255,255,.8);transform:translateX(-50%);transition:left .02s linear;}
+.mfill{position:absolute;inset:0;width:0%;border-radius:9px;transition:width .02s linear;}
+
+/* ── SERVE BANNER ── */
+#serve-b{position:fixed;top:70px;left:50%;transform:translateX(-50%);
+  font-family:var(--font-h);font-size:.92rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  background:rgba(200,168,75,.14);color:var(--accent);padding:7px 22px;border-radius:18px;
+  border:1px solid rgba(200,168,75,.28);z-index:50;pointer-events:none;
+  opacity:0;transition:opacity .3s;}
+#serve-b.vis{opacity:1;}
+#match-point-banner{
+  position:fixed; top:62px; left:50%; transform:translateX(-50%);
+  font-family:var(--font-h); font-size:1.1rem; font-weight:900;
+  letter-spacing:.18em; text-transform:uppercase;
+  background:rgba(0,0,0,0.55); padding:5px 22px; border-radius:16px;
+  border:1px solid currentColor; z-index:50; pointer-events:none;
+  opacity:0; transition:opacity .3s;
+}
+#match-point-banner.vis{opacity:1;}
+
+/* ── POINT FLASH ── */
+#pt-flash{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:var(--font-h);font-size:3.2rem;font-weight:900;letter-spacing:-.02em;text-transform:uppercase;
+  pointer-events:none;z-index:70;opacity:0;transition:opacity .18s;text-shadow:0 4px 28px currentColor;}
+#pt-flash.vis{opacity:1;}
+
+/* ── SET BANNER ── */
+#set-b{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:rgba(13,13,10,.96);border:1px solid rgba(255,255,255,.1);border-radius:14px;
+  padding:1.8rem 2.8rem;text-align:center;z-index:75;display:none;flex-direction:column;gap:.4rem;}
+#set-b.vis{display:flex;}
+.sbt{font-family:var(--font-h);font-size:2.2rem;font-weight:900;text-transform:uppercase;color:var(--accent);}
+.sbs{font-family:var(--font-h);font-size:1.3rem;font-weight:700;color:var(--white);}
+
+/* ── OVERLAYS ── */
+.ov{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.76);backdrop-filter:blur(7px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;}
+.ocard{background:rgba(13,13,10,.96);border:1px solid rgba(255,255,255,.1);border-radius:14px;
+  padding:2.6rem 3.5rem;display:flex;flex-direction:column;align-items:center;gap:1.4rem;min-width:340px;}
+.ot{font-family:var(--font-h);font-size:2.8rem;font-weight:900;letter-spacing:-.02em;text-transform:uppercase;}
+.os{font-size:.9rem;color:var(--mid);}
+.osc{font-family:var(--font-h);font-size:1.8rem;font-weight:700;}
+.orow{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center;}
+
+/* ── CONTROLS HINT ── */
+#ctrl-hint{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
+  display:flex;gap:1.2rem;background:rgba(0,0,0,.58);padding:7px 18px;border-radius:18px;
+  border:1px solid rgba(255,255,255,.07);z-index:50;pointer-events:none;}
+.hk{display:flex;align-items:center;gap:5px;font-size:.68rem;color:rgba(255,255,255,.45);}
+.hk kbd{background:rgba(255,255,255,.11);color:rgba(255,255,255,.75);padding:1px 6px;border-radius:3px;
+  font-size:.66rem;font-family:var(--font-b);border:1px solid rgba(255,255,255,.18);}
+
+/* ── ANIMATIONS ── */
+@keyframes fup{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── MOBILE JOYSTICKS ── */
+#mobile-controls{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;height:200px;
+  pointer-events:none;z-index:60;
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+.joy-zone{
+  position:absolute;bottom:16px;width:160px;height:160px;pointer-events:all;
+}
+#joy-left{left:12px;}
+#joy-right{right:12px;}
+.joy-base{
+  position:absolute;inset:0;border-radius:50%;
+  background:rgba(255,255,255,0.07);
+  border:2px solid rgba(255,255,255,0.18);
+}
+.joy-stick{
+  position:absolute;width:58px;height:58px;border-radius:50%;
+  background:rgba(255,255,255,0.28);
+  border:2px solid rgba(255,255,255,0.50);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+}
+.joy-arrow{
+  position:absolute;font-size:17px;color:rgba(255,255,255,0.38);line-height:1;
+}
+.joy-arrow.u{top:5px;   left:50%;transform:translateX(-50%);}
+.joy-arrow.d{bottom:5px;left:50%;transform:translateX(-50%);}
+.joy-arrow.l{left:5px;  top:50%; transform:translateY(-50%);}
+.joy-arrow.r{right:5px; top:50%; transform:translateY(-50%);}
+#joy-shot-lbl{
+  position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  font-family:var(--font-h);font-size:0.72rem;font-weight:700;letter-spacing:.1em;
+  color:rgba(255,255,255,0.75);white-space:nowrap;pointer-events:none;
+}
+#mob-serve-btn{
+  display:none;
+  position:fixed;bottom:220px;right:12px;
+  width:78px;height:78px;border-radius:50%;
+  background:rgba(200,168,75,0.85);
+  border:2px solid rgba(255,255,255,0.6);
+  font-family:var(--font-h);font-size:.85rem;font-weight:900;
+  color:#fff;letter-spacing:.05em;
+  pointer-events:all;z-index:61;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="hg" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="50%" stop-color="#c8a84b"/>
+      <stop offset="50%" stop-color="transparent"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<!-- ═══ MAIN MENU ═══ -->
+<div id="s-menu" class="screen">
+  <div class="m-bg"></div>
+  <div class="m-deco"></div>
+  <div class="m-inner">
+    <div class="m-eye">Badminton Simulation</div>
+    <div class="m-title">COURT<span>.</span></div>
+    <div class="m-tag">Play. Compete. Dominate.</div>
+    <div class="m-acts">
+      <button class="btn" onclick="Nav.go('player')">Play Now</button>
+      <button class="btn btn-o" onclick="UI.showCtrl()">Controls</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PLAYER CREATE ═══ -->
+<div id="s-player" class="screen flow hidden">
+  <div class="fi">
+    <div style="display:flex;flex-direction:column;gap:.25rem">
+      <button class="fb" onclick="Nav.go('menu')">← Back</button>
+      <div class="ft">Create Your Player</div>
+      <div class="fs">Allocate stats freely — each stat 1–5 stars (right-click star for half star)</div>
+    </div>
+    <div class="pc-layout">
+      <div style="display:flex;flex-direction:column;gap:1.1rem">
+        <div class="av-stage"><canvas id="av" width="200" height="256"></canvas></div>
+        <div class="swatch-row">
+          <span class="sl">Skin</span>
+          <div id="skin-row" style="display:flex;gap:.5rem"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.3rem">
+          <span class="sl" style="font-size:.68rem">Kit</span>
+          <div id="kit-row" style="display:flex;gap:.45rem;flex-wrap:wrap"></div>
+        </div>
+      </div>
+      <div class="sp">
+        <div id="stat-rows"></div>
+        <div style="display:flex;flex-direction:column;gap:.65rem">
+          <div class="sl" style="font-size:.68rem;letter-spacing:.2em">Quick Templates</div>
+          <div class="tmpl-g" id="tmpl-grid"></div>
+        </div>
+        <button class="btn" style="width:100%;margin-top:.4rem" onclick="Nav.go('setup')">Continue →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MATCH SETUP ═══ -->
+<div id="s-setup" class="screen flow hidden">
+  <div class="fi">
+    <div style="display:flex;flex-direction:column;gap:.25rem">
+      <button class="fb" onclick="Nav.go('player')">← Back</button>
+      <div class="ft">Match Setup</div>
+      <div class="fs">Configure your match</div>
+    </div>
+    <div class="sg">
+      <div class="sg-g">
+        <div class="sg-l">Difficulty</div>
+        <div class="so de" data-g="diff" data-v="easy"   onclick="Setup.pick(this)"><div class="sol">Easy</div><div class="sos">Relaxed CPU</div></div>
+        <div class="so dn on" data-g="diff" data-v="normal" onclick="Setup.pick(this)"><div class="sol">Normal</div><div class="sos">Balanced challenge</div></div>
+        <div class="so dh" data-g="diff" data-v="hard"   onclick="Setup.pick(this)"><div class="sol">Hard</div><div class="sos">Aggressive CPU</div></div>
+        <div class="so dx" data-g="diff" data-v="expert" onclick="Setup.pick(this)"><div class="sol">Expert</div><div class="sos">Near-perfect CPU</div></div>
+      </div>
+      <div class="sg-g">
+        <div class="sg-l">Points to Win</div>
+        <div class="so on" data-g="pts" data-v="21" onclick="Setup.pick(this)"><div class="sol">21 Points</div><div class="sos">BWF standard</div></div>
+        <div class="so"    data-g="pts" data-v="11" onclick="Setup.pick(this)"><div class="sol">11 Points</div><div class="sos">Quick match</div></div>
+      </div>
+      <div class="sg-g">
+        <div class="sg-l">Game Mode</div>
+        <div class="so on" data-g="mode" data-v="1" onclick="Setup.pick(this)"><div class="sol">Best of 1</div><div class="sos">Single game</div></div>
+        <div class="so"    data-g="mode" data-v="3" onclick="Setup.pick(this)"><div class="sol">Best of 3</div><div class="sos">Two games to decide</div></div>
+        <div class="so"    data-g="mode" data-v="5" onclick="Setup.pick(this)"><div class="sol">Best of 5</div><div class="sos">Full championship</div></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:.8rem">
+      <button class="btn" onclick="Game.start()">Start Match →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GAME ═══ -->
+<div id="s-game" class="screen hidden">
+  <canvas id="gc"></canvas>
+
+  <div id="hud">
+    <div class="hb"><div class="hn">You</div><div class="hs y" id="sp">0</div></div>
+    <div class="hc">
+      <div class="hsets" id="hsets"></div>
+      <div class="hml" id="hml">BEST OF 1</div>
+    </div>
+    <div class="hb" style="align-items:flex-end"><div class="hn" style="text-align:right">CPU</div><div class="hs c" id="sc">0</div></div>
+  </div>
+  <button id="hud-pause-btn" onclick="Game.pause()">PAUSE</button>
+
+  <div id="meter-wrap">
+    <div class="mlbl" id="mlbl">HOLD TO CHARGE</div>
+    <div class="mtrack">
+      <div class="mzones">
+        <div class="zrl" id="zrl" style="width:15%"></div>
+        <div class="zol" id="zol" style="width:20%"></div>
+        <div class="zg"  id="zg"></div>
+        <div class="zor" id="zor" style="width:20%"></div>
+        <div class="zrr" id="zrr" style="width:15%"></div>
+      </div>
+      <div class="mfill"   id="mfill"></div>
+      <div class="mneedle" id="mneedle" style="left:0%"></div>
+    </div>
+  </div>
+
+  <div id="serve-b">PRESS SPACE TO SERVE</div>
+  <div id="match-point-banner"></div>
+  <div id="pt-flash"></div>
+  <div id="set-b"><div class="sbt" id="sbt">SET 1</div><div class="sbs" id="sbs"></div></div>
+
+  <div id="ctrl-hint">
+    <span class="hk"><kbd>WASD</kbd> Move</span>
+    <span class="hk"><kbd>F</kbd> Normal / Serve</span>
+    <span class="hk"><kbd>R</kbd> Lob</span>
+    <span class="hk"><kbd>C</kbd> Drop</span>
+    <span class="hk"><kbd>T</kbd> Smash</span>
+    <span class="hk"><kbd>A/D</kbd> Aim L/R</span>
+    <span class="hk"><kbd>W/S</kbd> Depth</span>
+    <span class="hk"><kbd>Esc</kbd> Pause</span>
+  </div>
+
+  <!-- Mobile joysticks (shown only on touch devices) -->
+  <div id="mobile-controls">
+    <!-- Left joystick: movement -->
+    <div class="joy-zone" id="joy-left">
+      <div class="joy-base"></div>
+      <div class="joy-stick" id="joy-left-stick"></div>
+    </div>
+    <!-- Right joystick: shots -->
+    <div class="joy-zone" id="joy-right">
+      <div class="joy-base"></div>
+      <div class="joy-stick" id="joy-right-stick"></div>
+      <span class="joy-arrow u">▲</span>
+      <span class="joy-arrow d">▼</span>
+      <span class="joy-arrow l">◀</span>
+      <span class="joy-arrow r">▶</span>
+      <div id="joy-shot-lbl"></div>
+    </div>
+  </div>
+  <button id="mob-serve-btn" ontouchstart="MobileControls.onServe(event)">SERVE</button>
+
+  <!-- Pause -->
+  <div id="ov-pause" class="ov hidden">
+    <div class="ocard">
+      <div class="ot">Paused</div>
+      <div class="orow">
+        <button class="btn" onclick="Game.resume()">Resume</button>
+        <button class="btn btn-o btn-sm" onclick="Game.restart()">Restart</button>
+        <button class="btn btn-o btn-sm" onclick="Game.reset();Nav.go('menu')">Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Win -->
+  <div id="ov-win" class="ov hidden">
+    <div class="ocard">
+      <div class="ot" id="win-t">Match Over</div>
+      <div class="os" id="win-s"></div>
+      <div class="osc" id="win-sc"></div>
+      <div class="orow">
+        <button class="btn" onclick="Game.restart()">Play Again</button>
+        <button class="btn btn-o btn-sm" onclick="Game.reset();Nav.go('setup')">Change Setup</button>
+        <button class="btn btn-o btn-sm" onclick="Game.reset();Nav.go('menu')">Menu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Controls info -->
+<div id="ov-ctrl" class="ov hidden" onclick="this.classList.add('hidden')">
+  <div class="ocard" onclick="event.stopPropagation()" style="max-width:460px">
+    <div class="ot" style="font-size:1.9rem">Controls</div>
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:.5rem 1.8rem;width:100%">
+      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">W A S D</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Move player</div>
+      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">F</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Normal shot — hold &amp; release at green</div>
+      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">R</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Lob — high arc to baseline</div>
+      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">C</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Drop shot — short, near net</div>
+      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">T</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Smash — fast drive</div>
+      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">Space</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Serve</div>
+      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">A / D</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Aim shot left / right while holding shot key</div>
+    </div>
+    <button class="btn btn-o btn-sm" onclick="document.getElementById('ov-ctrl').classList.add('hidden')">Close</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+// ════════════════════════════════════════════════════════════════
+//   COURT  —  Badminton v3   (complete rebuild)
+// ════════════════════════════════════════════════════════════════
+
+// ── NAVIGATION ──────────────────────────────────────────────────
+const Nav = {
+  go(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+    document.getElementById('s-' + id).classList.remove('hidden');
+    if (id === 'player') PC.init();
+    if (id === 'menu')   { Game.cleanup(); }
+  }
+};
+const UI = { showCtrl(){ document.getElementById('ov-ctrl').classList.remove('hidden'); } };
+
+// ── SETUP ─────────────────────────────────────────────────────
+const Setup = {
+  diff:'normal', pts:21, mode:1,
+  pick(el) {
+    const g=el.dataset.g, v=el.dataset.v;
+    document.querySelectorAll(`[data-g="${g}"]`).forEach(e=>e.classList.remove('on'));
+    el.classList.add('on');
+    if(g==='diff') this.diff=v;
+    if(g==='pts')  this.pts=+v;
+    if(g==='mode') this.mode=+v;
+  }
+};
+
+// ── PLAYER CREATE ────────────────────────────────────────────────
+const PC = {
+  stats:{ speed:4, forehand:4, backhand:4, smash:4 },
+  skinI:0, kitI:0,
+  skins:['#f5c8a0','#d4956a','#c07840','#8b5c2e','#5c3318'],
+  kits: ['#1e4fa0','#b02a22','#217a3c','#6e2a9a','#1a1a1a','#c85c10','#126e5a','#b09030'],
+  tmpls:[
+    {name:'Defensive Master',desc:'5 SPD 4 FH 4 BH 3 SM',s:{speed:5,forehand:4,backhand:4,smash:3}},
+    {name:'The Dad',          desc:'3 SPD 4 FH 4 BH 5 SM',s:{speed:3,forehand:4,backhand:4,smash:5}},
+    {name:'Creative Maestro', desc:'3 SPD 5 FH 5 BH 3 SM',s:{speed:3,forehand:5,backhand:5,smash:3}},
+    {name:'All Rounder',      desc:'4 SPD 4 FH 4 BH 4 SM',s:{speed:4,forehand:4,backhand:4,smash:4}},
+  ],
+  keys:['speed','forehand','backhand','smash'],
+  names:{speed:'Speed',forehand:'Forehand',backhand:'Backhand',smash:'Smash'},
+
+  init() {
+    this.renderSkins(); this.renderKits(); this.renderStats(); this.renderTmpls(); this.drawAv();
+  },
+  renderSkins() {
+    document.getElementById('skin-row').innerHTML =
+      this.skins.map((s,i)=>`<div class="sdot${i===this.skinI?' on':''}" style="background:${s}" onclick="PC.setSkin(${i})"></div>`).join('');
+  },
+  setSkin(i){ this.skinI=i; this.renderSkins(); this.drawAv(); },
+  renderKits() {
+    document.getElementById('kit-row').innerHTML =
+      this.kits.map((k,i)=>`<div class="ksw${i===this.kitI?' on':''}" style="background:${k}" onclick="PC.setKit(${i})"></div>`).join('');
+  },
+  setKit(i){ this.kitI=i; this.renderKits(); this.drawAv(); },
+  renderStats() {
+    document.getElementById('stat-rows').innerHTML = this.keys.map(k=>`
+      <div class="stat-row">
+        <div class="slr">
+          <span class="sn">${this.names[k]}</span>
+          <span class="sv" id="sv-${k}">${this.stats[k]}★</span>
+        </div>
+        <div class="star-r" id="sr-${k}">${this._starH(k)}</div>
+      </div>`).join('');
+  },
+  _starH(k){
+    let h=''; const v=this.stats[k];
+    for(let i=1;i<=5;i++){
+      let cl = v>=i ? 'sf' : v>=i-0.5 ? 'sh' : 'se';
+      h+=`<div class="star" onclick="PC.setStar('${k}',${i},'f')" oncontextmenu="event.preventDefault();PC.setStar('${k}',${i-0.5},'h')">
+        <svg viewBox="0 0 24 24"><polygon class="${cl}" points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke-width="1.5"/></svg>
+      </div>`;
+    }
+    return h;
+  },
+  setStar(k,v){
+    if(this.stats[k]===v) v=Math.max(1,v-1);
+    this.stats[k]=Math.max(1,Math.min(5,v));
+    this.renderStats(); this.drawAv();
+  },
+  renderTmpls() {
+    document.getElementById('tmpl-grid').innerHTML =
+      this.tmpls.map((t,i)=>`<div class="tc" onclick="PC.applyT(${i})">
+        <div class="tn">${t.name}</div><div class="td">${t.desc}</div>
+      </div>`).join('');
+  },
+  applyT(i){
+    const t=this.tmpls[i];
+    this.stats={...t.s};
+    document.querySelectorAll('.tc').forEach((c,j)=>c.classList.toggle('on',j===i));
+    this.renderStats(); this.drawAv();
+  },
+  drawAv(){
+    const cv=document.getElementById('av'), cx=cv.getContext('2d');
+    const W=cv.width,H=cv.height;
+    cx.clearRect(0,0,W,H);
+    const g=cx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'rgba(255,255,255,.04)'); g.addColorStop(1,'rgba(255,255,255,.01)');
+    cx.fillStyle=g; cx.fillRect(0,0,W,H);
+    const sk=this.skins[this.skinI], kt=this.kits[this.kitI];
+    drawFigure(cx,W/2,H-20,1.0,sk,kt,'idle',0,false,false,true);
+  },
+  cfg(){ return { stats:{...this.stats}, skin:this.skins[this.skinI], kit:this.kits[this.kitI] }; }
+};
+
+// ── COLOUR HELPERS ──────────────────────────────────────────────
+function hex2rgb(h){const r=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);return r?{r:+('0x'+r[1]),g:+('0x'+r[2]),b:+('0x'+r[3])}:{r:128,g:128,b:128};}
+function lighter(h,a){const c=hex2rgb(h);return`rgb(${Math.min(255,c.r+a*255|0)},${Math.min(255,c.g+a*255|0)},${Math.min(255,c.b+a*255|0)})`;}
+function darker(h,a){const c=hex2rgb(h);return`rgb(${c.r*(1-a)|0},${c.g*(1-a)|0},${c.b*(1-a)|0})`;}
+
+// ── FIGURE DRAWING ─────────────────────────────────────────────
+// sc = visual scale, small value = smaller figure
+function drawFigure(ctx, x, y, sc, skin, kit, anim, frame, isCPU, facesLeft, forAvatar=false) {
+  ctx.save();
+  const f = facesLeft ? -1 : 1;
+  const S = Math.max(0.01, sc); // never zero or negative — prevents arc radius errors
+
+  // foot Y is at y; figure goes upward
+  const bobY = (anim==='run') ? Math.sin(frame*1.6)*2*S : 0;
+  // Smash: legs slightly apart and bent
+  const smashLegSpread = (anim==='smash') ? 4*S : 0;
+
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,.28)';
+  ctx.beginPath(); ctx.ellipse(x,y,18*S,6*S,0,0,Math.PI*2); ctx.fill();
+
+  // --- Shoes ---
+  const lleg = (anim==='run') ? Math.sin(frame*1.6)*5*S : 0;
+  const rleg = -lleg;
+  const lshoeX = x - 8*S + lleg - smashLegSpread;
+  const rshoeX = x + 8*S + rleg + smashLegSpread;
+  ctx.fillStyle='#f0ede8';
+  ctx.beginPath(); ctx.ellipse(lshoeX, y-1*S, 10*S,5*S, 0.15,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(rshoeX, y-1*S, 10*S,5*S,-0.15,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,.18)';
+  ctx.beginPath(); ctx.ellipse(lshoeX, y, 10*S,4*S, 0.15,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(rshoeX, y, 10*S,4*S,-0.15,0,Math.PI*2); ctx.fill();
+
+  // --- Legs ---
+  const legCol = darker(kit,.28);
+  ctx.fillStyle=legCol;
+  rRect(ctx, x-14*S+lleg - smashLegSpread, y-46*S+bobY, 11*S,47*S,4*S);
+  rRect(ctx, x+3*S+rleg  + smashLegSpread, y-46*S-bobY, 11*S,47*S,4*S);
+
+  // --- Shorts ---
+  ctx.fillStyle=darker(kit,.18);
+  rRect(ctx, x-17*S, y-52*S+bobY, 34*S,16*S,3*S);
+
+  // --- Body ---
+  ctx.fillStyle=kit;
+  rRect(ctx, x-16*S, y-104*S+bobY, 32*S,55*S,6*S);
+  // shirt stripe
+  ctx.fillStyle=lighter(kit,.22);
+  rRect(ctx, x-4*S, y-104*S+bobY, 8*S,55*S,3*S);
+  // collar
+  ctx.fillStyle=lighter(kit,.15);
+  rRect(ctx, x-7*S, y-105*S+bobY, 14*S,12*S,4*S);
+
+  // --- Arms ---
+  ctx.lineCap='round'; ctx.strokeStyle=skin; ctx.lineWidth=9*S;
+  // Arm angles based on animation
+  let laA=0.3, raA=-0.3;
+  if(anim==='forehand'){ raA = -0.9+frame*0.28; }
+  if(anim==='backhand'){ raA =  0.7-frame*0.22; laA=0.5; }
+  if(anim==='smash'){
+    // Jump smash: racket arm sweeps overhead and down powerfully
+    // frame 0: arm raised high (-1.8 rad = almost straight up)
+    // frame 1-2: sweeping forward and down
+    raA = -1.8 + frame * 0.6;  // sweeps from up (-1.8) toward forward (0)
+    laA = -0.5 + frame * 0.2;  // left arm back for balance
+  }
+
+  const lAx=x-16*S, lAy=y-96*S+bobY;
+  const rAx=x+16*S, rAy=y-98*S+bobY;
+  const lEX=lAx+Math.cos(Math.PI/2+laA)*26*S, lEY=lAy+Math.sin(Math.PI/2+laA)*26*S;
+  const rEX=rAx+Math.cos(Math.PI/2-raA)*28*S, rEY=rAy+Math.sin(Math.PI/2-raA)*28*S;
+
+  ctx.beginPath(); ctx.moveTo(lAx,lAy); ctx.lineTo(lEX,lEY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(rAx,rAy); ctx.lineTo(rEX,rEY); ctx.stroke();
+
+  // Hands
+  ctx.fillStyle=skin;
+  ctx.beginPath(); ctx.arc(lEX,lEY,5*S,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(rEX,rEY,5*S,0,Math.PI*2); ctx.fill();
+
+  // --- Racket (attached to right hand) ---
+  drawRacketFig(ctx, rEX, rEY, -0.35*f + (raA*0.4)*f, S, kit);
+
+  // --- Head ---
+  ctx.fillStyle=skin;
+  ctx.beginPath(); ctx.ellipse(x,y-122*S+bobY,15*S,18*S,0,0,Math.PI*2); ctx.fill();
+  // Hair
+  ctx.fillStyle=isCPU ? '#1a0a00' : '#2a1f10';
+  ctx.beginPath(); ctx.ellipse(x,y-134*S+bobY,15*S,10*S,0,0,Math.PI); ctx.fill();
+  // Eyes
+  ctx.fillStyle='#1a1a1a';
+  ctx.beginPath(); ctx.ellipse(x-5*S,y-124*S+bobY,2.2*S,1.8*S,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x+5*S,y-124*S+bobY,2.2*S,1.8*S,0,0,Math.PI*2); ctx.fill();
+  // Mouth
+  ctx.strokeStyle=darker(skin,.3); ctx.lineWidth=1.4*S;
+  ctx.beginPath(); ctx.arc(x,y-118*S+bobY,4*S,0.1,Math.PI-0.1); ctx.stroke();
+
+  // Label
+  if(!forAvatar){
+    ctx.fillStyle='rgba(255,255,255,.75)';
+    ctx.font=`bold ${Math.max(8,10*S)}px Barlow Condensed,sans-serif`;
+    ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.fillText(isCPU?'CPU':'YOU', x, y-146*S+bobY);
+  }
+  ctx.restore();
+}
+
+function drawRacketFig(ctx,x,y,angle,S,kit){
+  ctx.save(); ctx.translate(x,y); ctx.rotate(angle);
+  ctx.strokeStyle='#7a5020'; ctx.lineWidth=4*S; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,-24*S); ctx.stroke();
+  ctx.strokeStyle='#d8d8d8'; ctx.lineWidth=2*S;
+  ctx.beginPath(); ctx.ellipse(0,-34*S,10*S,15*S,0,0,Math.PI*2); ctx.stroke();
+  ctx.strokeStyle='rgba(255,255,255,.3)'; ctx.lineWidth=0.7*S;
+  for(let i=-8;i<=8;i+=4){ctx.beginPath();ctx.moveTo(i*S,-49*S);ctx.lineTo(i*S,-19*S);ctx.stroke();}
+  for(let i=-4;i<=4;i+=3){ctx.beginPath();ctx.moveTo(-10*S,-34*S+i*3*S);ctx.lineTo(10*S,-34*S+i*3*S);ctx.stroke();}
+  ctx.restore();
+}
+
+function rRect(ctx,x,y,w,h,r){
+  if(!ctx.roundRect){ ctx.beginPath();ctx.rect(x,y,w,h);ctx.fill();return; }
+  ctx.beginPath(); ctx.roundRect(x,y,w,h,r); ctx.fill();
+}
+
+// ════════════════════════════════════════════════════════════════
+//   GAME ENGINE
+// ════════════════════════════════════════════════════════════════
+
+// ── DIFFICULTY CONFIGS ──────────────────────────────────────────
+const DCFG = {
+  easy:   {speed:0.38, reactMs:700, errX:0.14, smashP:0.06, missP:0.32, dropP:0.18, lobP:0.20},
+  normal: {speed:0.52, reactMs:300, errX:0.07, smashP:0.30, missP:0.07, dropP:0.22, lobP:0.25},
+  hard:   {speed:0.66, reactMs:120, errX:0.03, smashP:0.52, missP:0.01, dropP:0.22, lobP:0.22},
+  expert: {speed:0.82, reactMs:50,  errX:0.012,smashP:0.72, missP:0.00, dropP:0.20, lobP:0.22},
+};
+
+// ── KEYS ────────────────────────────────────────────────────────
+const K = {
+  held:{}, just:{},
+  down(c){ if(!this.held[c]) this.just[c]=true; this.held[c]=true; },
+  up(c){ this.held[c]=false; },
+  flush(){ this.just={}; }
+};
+
+// ── GAME OBJECT ─────────────────────────────────────────────────
+const Game = {
+  canvas:null, ctx:null, raf:null, lastTs:0,
+  running:false, paused:false,
+  cfg:null,
+
+  // Match state
+  sets:[], setIdx:0, pts:{p:0,c:0}, srv:'p',
+  gstate:'serve', // serve | rally | dead
+
+  // World units: x ∈[-0.5,0.5], z ∈[0,1]
+  // z=0 → far baseline (CPU), z=1 → near baseline (PLAYER)
+  // Net at z=0.5
+
+  P:null, C:null, SH:null,
+  meter:{ on:false, key:null, charge:0, speed:1.2, gs:0.35, ge:0.65 },
+  particles:[], slowmo:false,
+  _kd:null, _ku:null,
+
+  // ── START ──
+  // Call reset() before start() to ensure clean state
+  reset(){
+    // Hide ALL overlays unconditionally before starting a new game
+    document.getElementById('ov-pause').classList.add('hidden');
+    document.getElementById('ov-win').classList.add('hidden');
+    this.paused = false;
+    this.cleanup();
+  },
+
+  start(){
+    this.reset(); // always clean slate
+    this.canvas = document.getElementById('gc');
+    this.ctx    = this.canvas.getContext('2d');
+    this.cfg    = { diff:Setup.diff, pts:Setup.pts, mode:Setup.mode, player:PC.cfg() };
+    Nav.go('game');
+    this.resize();
+    this.initMatch();
+    this.running = true; this.paused = false;
+    this._kd = e => {
+      K.down(e.code);
+      if(e.code==='Escape'){
+        e.preventDefault();
+        if(this.paused) this.resume(); else this.pause();
+      }
+      if(['KeyF','KeyR','KeyC','KeyT','KeyW','KeyA','KeyS','KeyD'].includes(e.code)) e.preventDefault();
+    };
+    this._ku = e => K.up(e.code);
+    window.addEventListener('keydown', this._kd);
+    window.addEventListener('keyup',   this._ku);
+    window.addEventListener('resize',  ()=>this.resize());
+    this.lastTs = performance.now();
+    this.raf = requestAnimationFrame(ts=>this.loop(ts));
+  },
+
+  resize(){
+    if(!this.canvas) return;
+    this.canvas.width  = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+  },
+
+  cleanup(){
+    if(this.raf) cancelAnimationFrame(this.raf);
+    this.running=false;
+    if(this._kd) window.removeEventListener('keydown',this._kd);
+    if(this._ku) window.removeEventListener('keyup',  this._ku);
+  },
+
+  pause(){
+    if(!this.running) return;
+    this.paused=true;
+    document.getElementById('ov-pause').classList.remove('hidden');
+  },
+  resume(){
+    this.paused=false;
+    document.getElementById('ov-pause').classList.add('hidden');
+    this.lastTs = performance.now();
+  },
+  restart(){
+    document.getElementById('ov-pause').classList.add('hidden');
+    document.getElementById('ov-win').classList.add('hidden');
+    this.cleanup();
+    // small delay then start fresh
+    setTimeout(()=>Game.start(), 80);
+  },
+
+  // ── INIT ──
+  initMatch(){
+    this.sets=[]; this.setIdx=0; this.pts={p:0,c:0}; this.srv='p';
+    this.particles=[];
+    const plCfg = this.cfg.player;
+    const dcfg  = DCFG[this.cfg.diff];
+
+    // Player starts at BWF serve position (score 0-0, even → right service court)
+    this.P = {
+      wx:0.12, wz:0.665,
+      speed: 0.42 + (plCfg.stats.speed-1)*0.05,
+      anim:'idle', animT:0, animF:0,
+      facesLeft:false, vx:0, vz:0,
+      jumpY:0, jumpVY:0, isJumping:false, jumpFalling:false,
+    };
+    // CPU starts at their serve position (opposite diagonal)
+    this.C = {
+      wx:-0.12, wz:0.335,
+      speed: dcfg.speed,
+      anim:'idle', animT:0, animF:0,
+      facesLeft:false,
+      tgtX:-0.12, tgtZ:0.335,
+      reactT:0, decided:false, willMiss:false, hitCD:0, serveT:0, graceT:0,
+      jumpY:0, jumpVY:0, isJumping:false, jumpFalling:false,
+    };
+    // Shuttle
+    this.SH = {
+      wx:0, wz:0.80, wy:0,
+      vx:0, vz:0, vy:0,
+      state:'held', owner:'p', shotType:'normal',
+      trail:[],
+    };
+    this.meter = {on:false,key:null,charge:0,speed:1.0,gs:0.35,ge:0.65,aimX:0,aimDepth:null};
+    this.slowmo = false;
+    this.canSmash = false;
+    this.smashPulse = 0;
+    this._rallyToken = 0;
+    this.rallyHits = 0;      // consecutive normal/smash hits in this rally
+    this.rallySpeedMult = 1.0; // shuttle speed multiplier, grows with hits
+    this.gstate = 'serve';
+    this.updateHUD();
+    this.showSrvBanner();
+  },
+
+  // ── LOOP ──
+  loop(ts){
+    if(!this.running){ return; }
+    this.raf = requestAnimationFrame(t=>this.loop(t));
+    if(this.paused) return;
+    const rawDt = Math.min((ts-this.lastTs)/1000, 0.05);
+    this.lastTs = ts;
+    // Physics dt: slowed when meter active so shuttle hangs in the air
+    const physDt = this.slowmo ? rawDt * 0.12 : rawDt;
+    // Meter dt: always real-time so player can read and release naturally
+    this.update(physDt, rawDt);
+    this.render();
+    K.flush();
+  },
+
+  // ── UPDATE ──
+  update(dt, meterDt){
+    meterDt = meterDt || dt;
+    this.movePlayer(dt, meterDt);  // pass rawDt so jump uses real time
+    if(this.gstate==='serve'){ this.handleServe(dt); return; }
+    if(this.gstate!=='rally') return;
+    this.updateMeter(meterDt);  // meter uses real-time dt
+    this.updateCPU(dt);
+    this.updateShuttle(dt);     // shuttle uses slowed dt
+    this.updateParticles(dt);
+
+    // Track smash availability — lob coming, player UNDER the landing zone
+    const SH=this.SH;
+    const P=this.P;
+    const isIncomingLob = SH.shotType==='lob' && SH.owner==='c' && SH.state==='flying';
+    const shuttleInPlayerHalf = SH.wz > 0.50;
+    const shuttleHigh = SH.wy > 0.15;
+
+    if(isIncomingLob && shuttleInPlayerHalf && shuttleHigh){
+      // Compute where shuttle will land
+      let ax=SH.wx, az=SH.wz, ay=SH.wy, avz=SH.vz, avx=SH.vx, avy=SH.vy;
+      const g=1.1, dt2=0.05;
+      for(let s=0;s<40;s++){
+        ax+=avx*dt2; az+=avz*dt2; ay+=avy*dt2; avy-=g*dt2;
+        if(ay<=0) break;
+      }
+      // Player must be within 0.20 world units of landing zone
+      const distToLand = Math.sqrt((P.wx-ax)**2 + (P.wz-az)**2);
+      this.canSmash = distToLand < 0.22;
+      this.smashLandX = ax; this.smashLandZ = az; // save for indicator
+    } else if(this.canSmash && (SH.wy <= 0 || SH.state!=='flying')){
+      this.canSmash = false;
+    }
+    this.smashPulse = (this.smashPulse||0) + 0.12;
+  },
+
+  movePlayer(dt, rawDt){
+    rawDt = rawDt || dt; // fallback if not provided
+    const P=this.P;
+
+    // ── Lock movement during serve and shot meter ──
+    const locked = (this.gstate==='serve' && this.srv==='p') || this.meter.on;
+
+    if(locked){
+      // Decelerate to stop but don't accept new input
+      const spd=Math.sqrt(P.vx*P.vx+P.vz*P.vz);
+      if(spd>0.001){
+        const dec=Math.min(spd, P.speed*10*dt);
+        P.vx-=(P.vx/spd)*dec; P.vz-=(P.vz/spd)*dec;
+      } else { P.vx=0; P.vz=0; }
+      if(!this.meter.on) P.anim='idle';
+      P.wx+=P.vx*dt; P.wz+=P.vz*dt;
+      P.wx=clamp(P.wx,-0.47,0.47); P.wz=clamp(P.wz,0.52,0.97);
+      if(this.SH.state==='held'&&this.SH.owner==='p'){
+        this.SH.wx=P.wx; this.SH.wz=P.wz-0.04; this.SH.wy=0.02;
+      }
+      P.animT+=dt; if(P.animT>0.11){P.animT=0;P.animF=(P.animF+1)%4;}
+      return;
+    }
+
+    let dx=0, dz=0;
+    if(K.held['KeyA']||K.held['ArrowLeft'])  dx=-1;
+    if(K.held['KeyD']||K.held['ArrowRight']) dx= 1;
+    if(K.held['KeyW']||K.held['ArrowUp'])    dz=-1;
+    if(K.held['KeyS']||K.held['ArrowDown'])  dz= 1;
+
+    const mg=Math.sqrt(dx*dx+dz*dz)||1;
+    const topSpeed=P.speed;
+    const accel=topSpeed*7.0;
+    const decel=topSpeed*10.0;
+
+    if(dx||dz){
+      P.vx+=(dx/mg)*accel*dt; P.vz+=(dz/mg)*accel*dt;
+      P.anim='run';
+      if(dx) P.facesLeft=(dx<0);
+    } else {
+      const spd=Math.sqrt(P.vx*P.vx+P.vz*P.vz);
+      if(spd>0.001){
+        const dec=Math.min(spd,decel*dt);
+        P.vx-=(P.vx/spd)*dec; P.vz-=(P.vz/spd)*dec;
+      } else { P.vx=0; P.vz=0; }
+      P.anim='idle';
+    }
+
+    const spd2=Math.sqrt(P.vx*P.vx+P.vz*P.vz);
+    if(spd2>topSpeed){ P.vx=P.vx/spd2*topSpeed; P.vz=P.vz/spd2*topSpeed; }
+
+    P.wx+=P.vx*dt; P.wz+=P.vz*dt;
+    P.wx=clamp(P.wx,-0.47,0.47); P.wz=clamp(P.wz,0.52,0.97);
+
+    if(this.SH.state==='held'&&this.SH.owner==='p'){
+      this.SH.wx=P.wx; this.SH.wz=P.wz-0.04; this.SH.wy=0.02;
+    }
+    P.animT+=dt; if(P.animT>0.11){P.animT=0;P.animF=(P.animF+1)%4;}
+
+    // Jump physics — ALWAYS rawDt, never slowed
+    if(P.isJumping || P.jumpY > 0){
+      P.jumpY = Math.max(0, (P.jumpY||0) + (P.jumpVY||0)*rawDt);
+      // Gravity only pulls down after the shot has been fired (P.jumpFalling)
+      // While meter is active (isJumping and not falling), hold near peak
+      if(P.jumpFalling){
+        P.jumpVY = (P.jumpVY||0) - 3.5*rawDt; // fast fall after shot
+      } else {
+        P.jumpVY = (P.jumpVY||0) - 2.2*rawDt; // normal rise gravity
+      }
+      if(P.jumpY <= 0){
+        P.jumpY=0; P.jumpVY=0; P.isJumping=false; P.jumpFalling=false;
+        if(P.anim==='smash') P.anim='idle';
+      }
+    }
+  },
+
+  // ── BWF Serving positions ──
+  // Short service line is at z=0.6478 (near) and z=0.3522 (far)
+  // Centre service line is x=0
+  // Server stands near the T-junction: just behind their short service line,
+  // on the correct side (right service court when score is even, left when odd)
+  // Right court = positive x, Left court = negative x
+  // Player (near end): right=positive x, left=negative x
+  // CPU (far end): right=negative x (mirrored), left=positive x
+  getServePosition(who, scoreEven){
+    // Even score → right service court, Odd → left service court
+    // BWF: server stands in right half when score is even (0,2,4...)
+    const rightCourt = scoreEven;
+    if(who==='p'){
+      // Player at near end — short service line at z≈0.648, behind it = z≈0.665
+      return { x: rightCourt ? 0.12 : -0.12, z: 0.665 };
+    } else {
+      // CPU at far end — short service line at z≈0.352, behind it (further from net) = z≈0.335
+      // CPU's right court is on player's left (x negative from player's perspective)
+      return { x: rightCourt ? -0.12 : 0.12, z: 0.335 };
+    }
+  },
+
+  handleServe(dt){
+    if(this.srv==='p'){
+      if(K.just['KeyF']) this.doPlayerServe();
+    } else {
+      this.C.serveT -= dt;
+      if(this.C.serveT <= 0) this.doCPUServe();
+    }
+  },
+
+  doPlayerServe(){
+    const P=this.P;
+    const even = (this.pts.p + this.pts.c) % 2 === 0;
+    const serveRight = even; // even score = serve from right court
+
+    // A/D tweaks aim within the correct box, W/S adjusts depth in box
+    let aimXBias = 0;
+    if(K.held['KeyA']) aimXBias = -0.08;
+    if(K.held['KeyD']) aimXBias =  0.08;
+
+    // Diagonal rule: right-court server → land in CPU's LEFT box (x < 0), and vice versa
+    const WS = 0.4246; // singles sideline
+    const boxCX = serveRight ? -0.18 : 0.18; // centre of correct diagonal box
+    const targetX = serveRight
+      ? clamp(boxCX + aimXBias + rn(-0.04,0.04), -WS, -0.02)
+      : clamp(boxCX + aimXBias + rn(-0.04,0.04),  0.02, WS);
+
+    // Must land inside CPU's front service box: z=0.352 (SSL far) to z=0.495 (just inside net)
+    let targetZ;
+    if(K.held['KeyW'])      targetZ = 0.37 + rn(-0.02,0.02); // deeper in box
+    else if(K.held['KeyS']) targetZ = 0.46 + rn(-0.02,0.02); // short, near net
+    else                    targetZ = 0.41 + rn(-0.02,0.02); // middle of front box
+
+    this.fireShuttle('p', P.wx, P.wz, targetX, targetZ, 0.32, 'normal');
+    this.C.graceT = 1.0; // CPU stays at serve position for 1s to receive
+    this.gstate = 'rally';
+    document.getElementById('serve-b').classList.remove('vis');
+  },
+
+  doCPUServe(){
+    const C=this.C;
+    const even = (this.pts.p + this.pts.c) % 2 === 0;
+    const cpuRight = !even; // CPU right is mirrored from player perspective
+    const WS = 0.4246;
+    // Must land in player's front service box: z=0.505 to z=0.648 (near SSL)
+    const boxCX = cpuRight ? -0.18 : 0.18;
+    const targetX = cpuRight
+      ? clamp(boxCX + rn(-0.06,0.06), -WS, -0.02)
+      : clamp(boxCX + rn(-0.06,0.06),  0.02, WS);
+    const targetZ = 0.59 + rn(-0.04, 0.04); // inside player's front service box
+    this.fireShuttle('c', C.wx, C.wz, targetX, targetZ, 0.32, 'normal');
+    this.gstate = 'rally';
+    document.getElementById('serve-b').classList.remove('vis');
+  },
+
+  // ── SHOT METER ──
+  heldShotKey(){
+    if(K.held['KeyF']) return 'f';
+    if(K.held['KeyR']) return 'r';
+    if(K.held['KeyC']) return 'c';
+    if(K.held['KeyT']) return 't';
+    return null;
+  },
+
+  updateMeter(dt){
+    const M=this.meter, SH=this.SH, P=this.P;
+    const sk=this.heldShotKey();
+
+    // Check proximity — can player actually reach this shuttle?
+    if(!M.on && sk && SH.owner==='c' && SH.state==='flying'){
+      const dx=SH.wx-P.wx, dz=SH.wz-P.wz;
+      const dist=Math.sqrt(dx*dx+dz*dz);
+      const shuttleInHalf = SH.wz >= 0.50;
+      // Max reach radius scales with how much time is left before shuttle lands
+      // timeToLand: positive means still falling, larger = more time
+      const timeToLand = SH.vy < 0 ? SH.wy / Math.abs(SH.vy) : 1.5;
+      // Player can reach if shuttle is in their half AND close enough OR has time to get there
+      const reachable = shuttleInHalf && (dist < 0.18 + timeToLand * P.speed * 0.6);
+      if(reachable){
+        this.startMeter(sk);
+      }
+      // If not reachable, key is ignored — shuttle will drop
+    }
+
+    if(M.on){
+      // Continuously sample aim direction so it's captured even if key released same frame
+      if(K.held['KeyA']) M.aimX = -0.28;
+      else if(K.held['KeyD']) M.aimX = 0.28;
+      // Don't reset to 0 if neither pressed — preserve last held direction
+      if(K.held['KeyW']) M.aimDepth = 'w';
+      else if(K.held['KeyS']) M.aimDepth = 's';
+      // Don't reset depth either — preserve last
+
+      M.charge=Math.min(1, M.charge+M.speed*dt);
+      const pct=M.charge*100;
+      document.getElementById('mneedle').style.left=pct+'%';
+      const fill=document.getElementById('mfill');
+      fill.style.width=pct+'%';
+      const c=M.charge;
+      if(c>=M.gs&&c<=M.ge)                fill.style.background='var(--green)';
+      else if(c<M.gs-0.14||c>M.ge+0.14)  fill.style.background='var(--red)';
+      else                                 fill.style.background='var(--orange)';
+
+      if(!sk){ this.releaseMeter(); }
+    }
+    document.getElementById('meter-wrap').classList.toggle('vis',M.on);
+  },
+
+  startMeter(key){
+    const M=this.meter, P=this.P, SH=this.SH;
+    M.on=true; M.key=key; M.charge=0;
+
+    // Initialise aim capture from currently held keys
+    M.aimX     = K.held['KeyA'] ? -0.28 : K.held['KeyD'] ? 0.28 : 0;
+    M.aimDepth = K.held['KeyW'] ? 'w'   : K.held['KeyS'] ? 's'  : null;
+
+    // ── Shot difficulty ──
+    // Based on: distance to shuttle, shuttle height (awkward if low or very high),
+    // time until shuttle lands, and stat quality
+    const dx=SH.wx-P.wx, dz=SH.wz-P.wz;
+    const dist=Math.sqrt(dx*dx+dz*dz);
+    const timeToLand = SH.vy < 0 ? Math.max(0, SH.wy/Math.abs(SH.vy)) : 2.0;
+    // ease: 0=very hard, 1=very easy
+    const distEase = Math.max(0, 1 - dist/0.45);
+    const timeEase = Math.min(1, timeToLand / 1.2);   // more time = easier
+    const heightEase = SH.wy < 0.05 ? 0.3 : SH.wy > 0.45 ? 0.6 : 1.0; // awkward heights
+    const ease = distEase * 0.4 + timeEase * 0.4 + heightEase * 0.2;
+
+    // Stat bonus
+    const sStat = (P.facesLeft ? this.cfg.player.stats.backhand : this.cfg.player.stats.forehand) / 5;
+
+    // Green zone: wider for easy shots + good stats
+    const greenW = 0.10 + ease*0.18 + sStat*0.07;
+    const ctr = 0.48 + rn(-0.05, 0.05);
+    M.gs = Math.max(0.06, ctr - greenW/2);
+    M.ge = Math.min(0.94, ctr + greenW/2);
+
+    // Meter speed: significantly faster — more challenging
+    // Range: 0.65 (easy, close) → 3.2 (barely reaching)
+    M.speed = 0.65 + (1 - ease) * 2.55;
+
+    // Slowmo: always on — physics pauses but meter fills at real-time speed
+    this.slowmo = true;
+
+    // Zone display
+    const rl=M.gs*0.50, ol=M.gs-rl;
+    const rr=(1-M.ge)*0.50, or=(1-M.ge)-rr;
+    document.getElementById('zrl').style.width=(rl*100)+'%';
+    document.getElementById('zol').style.width=(ol*100)+'%';
+    document.getElementById('zor').style.width=(or*100)+'%';
+    document.getElementById('zrr').style.width=(rr*100)+'%';
+    const labels={f:'Normal Shot',r:'Lob',c:'Drop Shot',t:'Smash'};
+    document.getElementById('mlbl').textContent=labels[key]||'SHOOT';
+
+    // Smash: check conditions directly (don't rely on stale this.canSmash from previous frame)
+    const smashCondition = SH.shotType==='lob' || SH.wy > 0.28;
+    if(key==='t' && smashCondition){
+      const P=this.P;
+      P.anim='smash'; P.animF=0;
+      P.jumpY       = 0;
+      P.jumpVY      = 0.50;   // launch upward on button press
+      P.jumpFalling = false;  // not falling yet — gravity is gentle while rising
+      P.isJumping   = true;
+      this.canSmash = true;
+    } else if(key==='t'){
+      this.canSmash = false;
+    } else {
+      this.canSmash = false;
+    }
+  },
+
+  releaseMeter(){
+    const M=this.meter; if(!M.on) return;
+    M.on=false; this.slowmo=false;
+    const c=M.charge;
+    let q= c>=M.gs&&c<=M.ge?'g': (c>M.gs-0.15&&c<M.ge+0.15)?'o':'r';
+    this.execShot(M.key,q);
+    document.getElementById('meter-wrap').classList.remove('vis');
+  },
+
+  execShot(key,q){
+    const P=this.P, SH=this.SH, M=this.meter;
+    const st=this.cfg.player.stats;
+    const isBackhand = SH.wx < P.wx;
+
+    // Smash check — only allowed if shuttle is high and on its way down
+    if(key==='t' && !this.canSmash){
+      // Can't smash — downgrade to a normal shot
+      key = 'f'; q = 'o'; // force orange quality
+    }
+
+    // Use aim that was captured DURING meter hold (not at release)
+    // For smash, A/D is a small directional nudge only — never sends it wide
+    const aimXRaw  = M.aimX || 0;
+    // Smash: full left/right aim like other shots — player should be able to aim corners
+    const aimX     = aimXRaw;  // no reduction — A/D gives real directional aim
+    const aimDepth = M.aimDepth || null;
+
+    // Smash: player has been jumping since startMeter. On shot fire, trigger fast fall.
+    if(key==='t'){
+      P.anim='smash'; P.animF=0;
+      // Immediately switch to fast-fall so player lands right after hitting
+      P.jumpFalling = true;
+      P.jumpVY = Math.min(P.jumpVY||0, -0.05); // ensure falling direction
+      // anim resets to idle when jumpY hits 0
+    } else {
+      P.anim = isBackhand ? 'backhand' : 'forehand'; P.animF=0;
+      setTimeout(()=>{ P.anim='idle'; }, 420);
+    }
+    P.facesLeft = isBackhand;
+
+    // ── Determine base shot parameters ──
+    let type, tz, peak;
+    switch(key){
+      case 'r': // Lob
+        type='lob';
+        tz   = aimDepth==='w' ? 0.10 : aimDepth==='s' ? 0.18 : 0.06+rn(0,.03);
+        peak = 0.62; // TALL arc — lob should be visually distinct
+        break;
+      case 'c': // Drop
+        type='drop';
+        tz   = aimDepth==='w' ? 0.44 : aimDepth==='s' ? 0.36 : 0.40;
+        peak = 0.14;
+        break;
+      case 't': // Smash — fast angled shot from jump height
+        type='smash';
+        // W = short (just past short service line), S = deeper mid-court, default = mid
+        tz   = aimDepth==='w' ? 0.36 : aimDepth==='s' ? 0.44 : 0.40;
+        peak = 0.12; // small positive arc — arc physics handle steep angle
+        break;
+      default:  // Normal (F)
+        type='normal';
+        tz   = aimDepth==='w' ? 0.38 : aimDepth==='s' ? 0.22 : 0.30;
+        peak = 0.28;
+    }
+
+    // ── Quality consequences ──
+    const statKey = isBackhand ? st.backhand : st.forehand;
+    let errX, errZ;
+
+    if(q==='g'){
+      // Perfect — very precise
+      errX = type==='smash' ? 0.04 : 0.015 + (5-statKey)*0.008;
+      errZ = type==='smash' ? 0.02 : 0.015;
+    } else if(q==='o'){
+      // Decent — slight inaccuracy, occasional mis-hit
+      errX = 0.06 + (5-statKey)*0.015;
+      errZ = 0.05;
+      // ~20% chance of shot going wrong
+      if(Math.random() < 0.20){
+        if(type==='drop'){
+          // Drop into net or pops up
+          const mishap = Math.random();
+          if(mishap < 0.35){
+            type='drop'; peak=0.08; tz=0.499; // clips net
+          } else {
+            type='lob'; peak=0.45; tz=0.15+rn(0,0.05); // pops up for smash
+          }
+        } else if(type==='normal'){
+          // Goes slightly long/wide
+          errX += 0.10; errZ += 0.08;
+        }
+      }
+    } else {
+      // Red — bad shot, major consequences
+      const mishap = Math.random();
+      if(mishap < 0.30){
+        // Hit into net — lands just past the line in CPU half
+        type='normal'; tz=0.499; peak=0.05; // barely clears / hits net
+      } else if(mishap < 0.65){
+        // Pops up as a perfect lob for CPU to smash
+        type='lob'; tz=0.12+rn(0,0.05); peak=0.85; // very high, easy smash
+        errX = 0.05; errZ = 0.04;
+      } else {
+        // Hits wide/long (out)
+        errX = 0.20 + rn(0,0.10);
+        errZ = 0.15;
+      }
+    }
+
+    const tx  = type==='smash'
+      ? clamp(aimX + rn(-errX, errX), -0.42, 0.42)
+      : clamp(aimXRaw + rn(-errX, errX), -0.46, 0.46);
+    const tzF = type==='smash'
+      ? clamp(tz + rn(-errZ, errZ), 0.33, 0.46)
+      : clamp(tz + rn(-errZ, errZ), 0.02, 0.48);
+
+    this.fireShuttle('p', P.wx, P.wz, tx, tzF, peak, type);
+    this.spawnHit(P.wx, P.wz);
+  },
+
+  // ── CPU AI — full overhaul ──
+  updateCPU(dt){
+    const C=this.C, SH=this.SH;
+    const dcfg = DCFG[this.cfg.diff];
+    C.hitCD = Math.max(0, C.hitCD - dt);
+    if(C.graceT > 0) C.graceT -= dt;
+
+    const shuttleComingToCPU = SH.state==='flying' && SH.owner==='p';
+    const shuttleCPUOwns     = SH.state==='held' && SH.owner==='c';
+
+    if(shuttleCPUOwns){
+      // Serving — hold serve position, don't drift
+      C.tgtX = C.wx; C.tgtZ = C.wz;
+
+    } else if(shuttleComingToCPU){
+      // React after reaction delay — predict landing and move there
+      C.reactT -= dt;
+      if(C.reactT <= 0){
+        const err = dcfg.errX;
+        if(Math.random() < dcfg.missP){
+          // Intentional miss: move wrong direction
+          C.tgtX = rn(-0.35, 0.35);
+          C.tgtZ = 0.20 + rn(-0.08, 0.08);
+          C.willMiss = true;
+        } else {
+          // Predict: extrapolate shuttle position forward slightly
+          const lookahead = Math.min(0.4, SH.wy > 0 ? SH.wy/Math.max(0.01,Math.abs(SH.vy)) : 0.3);
+          const predX = clamp(SH.wx + SH.vx * lookahead, -0.44, 0.44);
+          const predZ = clamp(SH.wz + SH.vz * lookahead, 0.04, 0.46);
+          C.tgtX = clamp(predX + rn(-err, err), -0.44, 0.44);
+          C.tgtZ = clamp(predZ + rn(-err*0.4, err*0.4), 0.04, 0.46);
+          C.willMiss = false;
+        }
+        C.reactT = 0;
+      }
+
+    } else if(C.graceT > 0){
+      // Grace period: player just served — CPU waits at serve position to return
+      C.tgtX = C.wx; C.tgtZ = C.wz;
+
+    } else {
+      // Idle: return to mid-court ready spot
+      C.tgtX = 0.0;
+      C.tgtZ = 0.22;
+      C.decided = false;
+      C.reactT = dcfg.reactMs / 1000;
+      C.willMiss = false;
+    }
+
+    // Move toward target
+    const tdx = C.tgtX - C.wx;
+    const tdz = C.tgtZ - C.wz;
+    const dist = Math.sqrt(tdx*tdx + tdz*tdz);
+    if(dist > 0.003){
+      const mv = Math.min(dcfg.speed * dt, dist);
+      C.wx += (tdx/dist) * mv;
+      C.wz += (tdz/dist) * mv;
+    }
+    C.wx = clamp(C.wx, -0.46, 0.46);
+    C.wz = clamp(C.wz, 0.03, 0.48);
+    if(Math.abs(tdx) > 0.004) C.facesLeft = (tdx < 0);
+
+    C.animT += dt;
+    if(C.animT > 0.11){ C.animT=0; C.animF=(C.animF+1)%4; }
+    C.anim = dist > 0.012 ? 'run' : 'idle';
+
+    // CPU jump physics
+    if(C.isJumping || C.jumpY > 0){
+      C.jumpY = Math.max(0, (C.jumpY||0) + (C.jumpVY||0)*dt);
+      C.jumpVY = (C.jumpVY||0) - 1.3*dt;
+      if(C.jumpY <= 0){ C.jumpY=0; C.jumpVY=0; C.isJumping=false; }
+    }
+
+    // Hit shuttle when in reach
+    if(shuttleComingToCPU && C.hitCD <= 0 && !C.willMiss){
+      // Smashes are much harder to return — smaller reach window
+      const reach = SH.shotType==='smash' ? 0.10 : 0.18;
+      // Smash height drops very fast — CPU must be right under it
+      const maxHeight = SH.shotType==='smash' ? 0.30 : 0.65;
+      const sd = Math.sqrt((SH.wx-C.wx)**2 + (SH.wz-C.wz)**2);
+      if(sd < reach && SH.wy < maxHeight){
+        this.cpuHit(dcfg);
+        C.hitCD = 0.35;
+      }
+    }
+  },
+
+  cpuHit(dcfg){
+    const C=this.C, SH=this.SH;
+
+    const sd = Math.sqrt((SH.wx-C.wx)**2 + (SH.wz-C.wz)**2);
+    const timeLeft = SH.vy < 0 ? SH.wy/Math.abs(SH.vy) : 0;
+    const reachQuality = Math.max(0, 1 - sd/0.18) * 0.6 + Math.min(1, timeLeft/0.5) * 0.4;
+
+    const returningSmash = SH.shotType==='smash';
+    // Don't force pop-up lob when receiving a serve (shuttle is low, normal)
+    const isServeReturn = SH.wy < 0.15 && Math.abs(SH.vz) < 0.6;
+    const barelyReached = returningSmash ||
+      (!isServeReturn && reachQuality < 0.25) ||
+      (!isServeReturn && dcfg.missP > 0 && Math.random() < 0.12);
+
+    if(barelyReached){
+      const peak = returningSmash ? 0.75 + rn(0,0.10) : 0.68 + rn(0,0.12);
+      const tz   = returningSmash ? 0.68+rn(-0.04,0.04) : 0.70+rn(-0.05,0.05);
+      const tx   = clamp(this.P.wx*0.3 + rn(-0.15,0.15), -0.42, 0.42);
+      C.anim='forehand'; C.animF=0;
+      setTimeout(()=>{ C.anim='idle'; }, 380);
+      this.fireShuttle('c', C.wx, C.wz, tx, tz, peak, 'lob');
+      this.spawnHit(C.wx, C.wz);
+      C.willMiss=false; C.decided=false;
+      this.canSmash = true;
+      return;
+    }
+
+    // Smash ONLY when receiving a genuinely high lob — not just any shot
+    const isHighLob = SH.shotType==='lob' && SH.wy > 0.25;
+    const atFront   = C.wz > 0.38;
+    const doSmash   = isHighLob && atFront;  // must be high lob AND at front
+
+    let type, peak, tz;
+    if(doSmash){
+      type='smash'; peak=0.05;
+      tz = 0.60 + rn(-0.05, 0.08);
+    } else {
+      const rv = Math.random();
+      // Normal is dominant (55%), drop is common (28%), lob is rare (17%)
+      // Lob is only natural after drop; otherwise CPU plays real badminton shots
+      const lastType = SH.shotType;
+      const dropChance   = 0.20 + dcfg.dropP * 0.4;
+      const lobChance    = lastType==='drop' ? 0.22 : 0.10;  // lob after drop only
+      // normalChance fills the rest
+
+      if(rv < dropChance){
+        type='drop'; peak=0.14;
+        tz = 0.54 + rn(-0.03, 0.04);
+      } else if(rv < dropChance + lobChance){
+        type='lob'; peak=0.54;
+        tz = 0.87 + rn(-0.04, 0.04);
+      } else {
+        type='normal'; peak=0.26;
+        // Good variety of normal shot depths
+        const d = Math.random();
+        if(d < 0.25)      tz = 0.57 + rn(-0.03,0.03); // short
+        else if(d < 0.55) tz = 0.68 + rn(-0.04,0.04); // mid
+        else if(d < 0.80) tz = 0.78 + rn(-0.04,0.04); // deep-mid
+        else              tz = 0.86 + rn(-0.03,0.03); // deep push
+      }
+    }
+
+    const err = dcfg.errX;
+    const rv2 = Math.random();
+    let aimX;
+    if(rv2 < 0.38)      aimX = -0.22 + rn(-err,err);
+    else if(rv2 < 0.76) aimX =  0.22 + rn(-err,err);
+    else                aimX =  rn(-0.06,0.06);
+    aimX = clamp(aimX - Math.sign(this.P.wx)*0.12*dcfg.smashP, -0.44, 0.44);
+
+    C.anim = doSmash ? 'smash' : (C.wx < SH.wx ? 'backhand' : 'forehand');
+    C.animF = 0;
+    C.facesLeft = aimX < C.wx;
+
+    // Jump for smash
+    if(doSmash){
+      C.jumpY = 0; C.jumpVY = 0.24; C.isJumping = true;
+      setTimeout(()=>{ C.anim='idle'; C.isJumping=false; }, 500);
+    } else {
+      setTimeout(()=>{ C.anim='idle'; }, 380);
+    }
+
+    this.fireShuttle('c', C.wx, C.wz, aimX, clamp(tz,0.52,0.96), peak, type);
+    this.spawnHit(C.wx, C.wz);
+    C.willMiss=false; C.decided=false;
+  },
+
+  // ── SHUTTLE ──
+  fireShuttle(owner,fx,fz,tx,tz,peakH,type){
+    const SH=this.SH;
+    const dx=tx-fx, dz=tz-fz;
+    const dist=Math.sqrt(dx*dx+dz*dz);
+
+    // Guard: zero-length or degenerate shot — silently discard
+    if(!isFinite(dist) || dist < 0.005){ return; }
+
+    // Rally speed escalation
+    if(type==='lob' || type==='drop'){
+      this.rallyHits = 0; this.rallySpeedMult = 1.0;
+    } else {
+      this.rallyHits = Math.min(this.rallyHits + 1, 10);
+      this.rallySpeedMult = Math.min(1.80, 1.0 + this.rallyHits * 0.08);
+    }
+
+    const g = 1.1;
+
+    if(type==='smash'){
+      const startY = owner==='p' ? 0.22 + (this.P.jumpY || 0) : 0.20;
+      const time = Math.max(0.44, dist / 1.4);
+      SH.wx=fx; SH.wz=fz; SH.wy=startY;
+      SH.vx=dx/time; SH.vz=dz/time;
+      let smashVy = (0.5*g*time*time - startY) / time;
+      // Net clearance — only compute if not firing nearly sideways
+      if(Math.abs(dz) > 0.02){
+        const NET_Z=0.500, NET_H=0.115;
+        const tNet=(NET_Z-fz)/dz;
+        if(tNet>0 && tNet<1){
+          const tAtNet=tNet*time;
+          const hAtNet=startY+smashVy*tAtNet-0.5*g*tAtNet*tAtNet;
+          if(hAtNet < NET_H+0.02){
+            const minVy=(NET_H+0.03-startY+0.5*g*tAtNet*tAtNet)/tAtNet;
+            smashVy=Math.max(smashVy, minVy);
+          }
+        }
+      }
+      SH.vy=smashVy;
+      SH.state='flying'; SH.owner=owner; SH.shotType=type; SH.trail=[];
+      return;
+    }
+
+    // Non-smash: normal arc with net clearance
+    const minTime = 1.0 / this.rallySpeedMult;
+    const speedDiv = 0.60 * this.rallySpeedMult;
+    const time = Math.max(minTime, dist/speedDiv);
+    let safePeak = peakH;
+    if(Math.abs(dz) > 0.02){
+      const NET_Z=0.500, NET_H=0.115;
+      const tNet=(NET_Z-fz)/dz;
+      if(tNet>0 && tNet<1){
+        const tAtNet=tNet*time;
+        const minVy=(NET_H+0.04+0.5*g*tAtNet*tAtNet-0.03)/tAtNet;
+        const minPeak=(minVy-0.5*g*time*0.35)*time;
+        safePeak=Math.max(peakH, minPeak);
+      }
+    }
+    SH.wx=fx; SH.wz=fz; SH.wy=0.03;
+    SH.vx=dx/time; SH.vz=dz/time;
+    SH.vy=(safePeak/time)+0.5*g*time*0.35;
+    SH.state='flying'; SH.owner=owner; SH.shotType=type; SH.trail=[];
+  },
+
+  updateShuttle(dt){
+    const SH=this.SH;
+    if(SH.state!=='flying') return;
+
+    // Corrupt state guard — if any position is NaN/Inf, call a fault
+    if(!isFinite(SH.wx)||!isFinite(SH.wz)||!isFinite(SH.wy)){
+      SH.state='dead'; this.fault(); return;
+    }
+
+    SH.trail.unshift({wx:SH.wx,wz:SH.wz,wy:SH.wy});
+    if(SH.trail.length>16) SH.trail.pop();
+
+    SH.wx+=SH.vx*dt; SH.wz+=SH.vz*dt; SH.wy+=SH.vy*dt;
+    SH.vy-=1.1*dt;
+
+    // Net check at z=0.5
+    const NET_H=0.06;
+    if(SH.owner==='p'&&SH.vz<0&&SH.wz<=0.505&&SH.wz>=0.488){
+      if(SH.wy<NET_H){this.netFault();return;}
+    }
+    if(SH.owner==='c'&&SH.vz>0&&SH.wz>=0.495&&SH.wz<=0.512){
+      if(SH.wy<NET_H){this.netFault();return;}
+    }
+    if(Math.abs(SH.wx)>0.51){this.fault();return;}
+
+    if(SH.wy<=0){
+      SH.wy=0;
+      if(this.gstate!=='rally') return; // already scored
+      const inB=Math.abs(SH.wx)<0.5&&SH.wz>0.01&&SH.wz<0.99;
+      const cpuH=SH.wz<0.5, plH=SH.wz>=0.5;
+      if(SH.owner==='p') this.scorePoint(cpuH&&inB?'p':'c');
+      else               this.scorePoint(plH&&inB?'c':'p');
+    }
+  },
+
+  netFault(){
+    if(this.gstate!=='rally') return;
+    this.scorePoint(this.SH.owner==='p'?'c':'p');
+  },
+  fault(){
+    if(this.gstate!=='rally') return;
+    this.scorePoint(this.SH.owner==='p'?'c':'p');
+  },
+
+  // ── SCORING ──
+  scorePoint(winner){
+    // Guard: ignore if we already ended this rally
+    if(this.gstate==='dead' || this.gstate==='matchEnd') return;
+
+    this.SH.state='dead'; this.SH.trail=[];
+    this.gstate='dead'; this.meter.on=false; this.slowmo=false;
+    this.canSmash=false;
+    this.pts[winner]++;
+    this.srv=winner;
+    this.updateHUD();
+
+    // Point flash
+    const fl=document.getElementById('pt-flash');
+    fl.textContent=winner==='p'?'POINT!':'CPU POINT';
+    fl.style.color=winner==='p'?'#c8a84b':'#4b8bc8';
+    fl.classList.add('vis');
+    setTimeout(()=>fl.classList.remove('vis'),850);
+
+    // Use a rally token so only the freshest timeout fires
+    const token = ++this._rallyToken;
+
+    const wp=this.pts.p, wc=this.pts.c, wn=this.cfg.pts;
+    // Deuce rule: at wn-1 all (e.g. 20-20), must win by 2
+    const atDeuceLevel = wp >= wn-1 && wc >= wn-1;
+    const setWon = atDeuceLevel
+      ? Math.abs(wp-wc) >= 2 && (wp>=wn || wc>=wn)
+      : (wp>=wn || wc>=wn) && Math.abs(wp-wc)>=2;
+
+    setTimeout(()=>{
+      if(!this.running) return;
+      if(token !== this._rallyToken) return;
+      if(setWon) this.endSet(winner);
+      else       this.nextRally();
+    }, 1100);
+  },
+
+  endSet(winner){
+    this.sets.push({p:this.pts.p,c:this.pts.c,w:winner});
+    const sP=this.sets.filter(s=>s.w==='p').length;
+    const sC=this.sets.filter(s=>s.w==='c').length;
+    const need=Math.ceil(this.cfg.mode/2);
+    if(sP>=need||sC>=need){this.endMatch(sP>sC?'p':'c');return;}
+    const sb=document.getElementById('set-b');
+    document.getElementById('sbt').textContent=`SET ${this.setIdx+1} COMPLETE`;
+    document.getElementById('sbs').textContent=`${this.pts.p} – ${this.pts.c}`;
+    sb.classList.add('vis');
+    const token = ++this._rallyToken;
+    setTimeout(()=>{
+      if(!this.running) return;
+      if(token !== this._rallyToken) return;
+      sb.classList.remove('vis');
+      this.setIdx++;
+      this.pts={p:0,c:0};
+      this.updateHUD();
+      this.nextRally();
+    },2600);
+  },
+
+  endMatch(winner){
+    this.gstate='dead';
+    const sP=this.sets.filter(s=>s.w==='p').length;
+    const sC=this.sets.filter(s=>s.w==='c').length;
+    document.getElementById('win-t').textContent=winner==='p'?'You Win!':'CPU Wins';
+    document.getElementById('win-t').style.color=winner==='p'?'#c8a84b':'#4b8bc8';
+    document.getElementById('win-s').textContent='Match complete';
+    document.getElementById('win-sc').textContent=`${sP} – ${sC} sets`;
+    document.getElementById('ov-win').classList.remove('hidden');
+  },
+
+  nextRally(){
+    this.gstate='serve';
+    this.SH.state='held'; this.SH.owner=this.srv; this.SH.trail=[];
+    this.meter.on=false; this.slowmo=false;
+    this.rallyHits=0; this.rallySpeedMult=1.0;
+    document.getElementById('meter-wrap').classList.remove('vis');
+
+    // BWF: both players stand near the T (short service line meets centre line)
+    const even = (this.pts.p + this.pts.c) % 2 === 0;
+    const pPos = this.getServePosition('p', even);
+    const cPos = this.getServePosition('c', even);
+
+    this.P.wx = pPos.x; this.P.wz = pPos.z;
+    this.P.vx = 0; this.P.vz = 0;
+    this.C.wx = cPos.x; this.C.wz = cPos.z;
+    this.C.decided = false; this.C.graceT = 0;
+
+    if(this.srv==='p'){
+      this.SH.wx = this.P.wx;
+      this.SH.wz = this.P.wz - 0.03;
+      this.SH.wy = 0.02;
+    } else {
+      this.SH.wx = this.C.wx;
+      this.SH.wz = this.C.wz + 0.03;
+      this.SH.wy = 0.02;
+      this.C.serveT = 1.4 + Math.random()*0.8;
+    }
+    this.showSrvBanner();
+  },
+
+  showSrvBanner(){
+    const el=document.getElementById('serve-b');
+    el.textContent=this.srv==='p'?'PRESS F TO SERVE':'CPU SERVING…';
+    el.classList.add('vis');
+    if(this.srv==='c') setTimeout(()=>el.classList.remove('vis'),1100);
+  },
+
+  // ── HUD ──
+  updateHUD(){
+    const wp=this.pts.p, wc=this.pts.c, wn=this.cfg.pts;
+    document.getElementById('sp').textContent=wp;
+    document.getElementById('sc').textContent=wc;
+    document.getElementById('hml').textContent=`BEST OF ${this.cfg.mode} · ${this.cfg.pts} PTS`;
+    const hsets=document.getElementById('hsets');
+    hsets.innerHTML='';
+    for(let i=0;i<this.cfg.mode;i++){
+      const d=document.createElement('div'); d.className='hsd';
+      const s=this.sets[i];
+      if(s) d.classList.add(s.w==='p'?'wp':'wc');
+      hsets.appendChild(d);
+    }
+
+    // ── Match point / deuce indicator ──
+    const mp=document.getElementById('match-point-banner');
+    if(!mp) return;
+    const atDeuce = wp >= wn-1 && wc >= wn-1;
+    if(atDeuce){
+      if(wp === wc){
+        mp.textContent='DEUCE'; mp.style.color='#f0ede8'; mp.classList.add('vis');
+      } else {
+        const leader = wp>wc ? 'p' : 'c';
+        mp.textContent = leader==='p' ? 'ADVANTAGE YOU' : 'ADVANTAGE CPU';
+        mp.style.color = leader==='p' ? '#c8a84b' : '#4b8bc8';
+        mp.classList.add('vis');
+      }
+    } else if((wp===wn-1 && wc<wn-1) || (wc===wn-1 && wp<wn-1)){
+      // One player is at match point
+      const mpSide = wp===wn-1 ? 'p' : 'c';
+      mp.textContent = mpSide==='p' ? 'MATCH POINT' : 'CPU MATCH POINT';
+      mp.style.color  = mpSide==='p' ? '#c8a84b' : '#ff6060';
+      mp.classList.add('vis');
+    } else {
+      mp.classList.remove('vis');
+    }
+  },
+
+  // ── PARTICLES ──
+  spawnHit(wx,wz){
+    const pt=this.w2s(wx,wz,0.05);
+    for(let i=0;i<10;i++){
+      const a=Math.random()*Math.PI*2, sp=50+Math.random()*80;
+      this.particles.push({x:pt.x,y:pt.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-50,life:.35,ml:.35,col:Math.random()<.5?'#c8a84b':'#fff',r:2+Math.random()*2});
+    }
+  },
+  updateParticles(dt){
+    for(let i=this.particles.length-1;i>=0;i--){
+      const p=this.particles[i];
+      p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=200*dt;p.life-=dt;
+      if(p.life<=0) this.particles.splice(i,1);
+    }
+  },
+
+  // ════════════════════════════════════════════════
+  //   RENDER
+  // ════════════════════════════════════════════════
+  render(){
+    const cv=this.canvas, ctx=this.ctx;
+    if(!cv||!ctx) return;
+    const W=cv.width, H=cv.height;
+    ctx.clearRect(0,0,W,H);
+    this.drawBG(ctx,W,H);
+    this.drawCourt(ctx,W,H);
+    if(this.gstate==='serve' && this.srv==='p') this.drawServeAim(ctx);
+    if(this.meter.on) this.drawShotAim(ctx);
+    this.drawNet(ctx,W,H);
+    this.drawShuttle(ctx);
+    // Draw CPU first (far end), then player (near end) — correct Z-order
+    this.drawFigure3D(ctx,'c');
+    this.drawFigure3D(ctx,'p');
+    if(this.canSmash && !this.meter.on) this.drawSmashIndicator(ctx);
+    this.drawParticles(ctx);
+  },
+
+  // ── PROJECTION ──────────────────────────────────
+  // Fixed camera: eye is slightly above and behind the near baseline
+  // z=1 (near, player) → bottom of viewport
+  // z=0 (far, CPU)     → horizon
+  w2s(wx, wz, wy=0){
+    const W=this.canvas.width, H=this.canvas.height;
+
+    // On mobile portrait (W < H*0.75) pull back so full court fits on narrow screen
+    const mob = W < H * 0.75;
+    const horizY  = H * (mob ? 0.14 : 0.08);
+    const nearY   = H * (mob ? 0.88 : 0.94);
+    const nearHWf = mob ? 0.44 : 0.58;
+    const farHWf  = mob ? 0.14 : 0.17;
+
+    const t  = 1.0 - wz;
+    const tp = Math.pow(t, 0.78);
+
+    const sy   = nearY - (nearY - horizY) * tp;
+    const hw   = W*farHWf + (W*nearHWf - W*farHWf) * (1.0 - tp);
+    const sx   = W/2 + wx * hw;
+
+    const finalY = sy - wy * H * 0.62 * (0.05 + (1.0 - tp) * 0.95);
+    const sc = 0.70 + (1.0 - tp) * 0.28;
+    return { x:sx, y:finalY, sc };
+  },
+
+  drawBG(ctx,W,H){
+    // Surround: darker green, clearly distinct from the brighter court surface
+    ctx.fillStyle='#1a5c28';
+    ctx.fillRect(0,0,W,H);
+
+    // Stand/arena area at top (8%) — tiny dark strip at very top
+    const stG=ctx.createLinearGradient(0,0,0,H*0.08);
+    stG.addColorStop(0,'rgba(0,0,0,0.85)');
+    stG.addColorStop(0.7,'rgba(0,0,0,0.40)');
+    stG.addColorStop(1,'rgba(0,0,0,0.0)');
+    ctx.fillStyle=stG; ctx.fillRect(0,0,W,H*0.08);
+
+    // Crowd rows
+    for(let r=0;r<8;r++){
+      const ry=H*0.010 + r*(H*0.022);
+      ctx.fillStyle=`rgba(255,255,255,${r%2===0?0.006:0.003})`;
+      ctx.fillRect(0,ry,W,H*0.012);
+    }
+
+    // Coloured seat patches
+    for(let c=0;c<12;c++){
+      const cx2=W*(0.05+c*0.08+Math.sin(c*2.1)*0.02);
+      const cy2=H*(0.01+Math.sin(c*3.1)*0.04);
+      ctx.fillStyle=`rgba(${c%3===0?'140,45,30':c%3===1?'30,60,130':'170,170,170'},0.04)`;
+      ctx.fillRect(cx2,cy2,W*0.05,H*0.009);
+    }
+
+    // Floodlights
+    for(let i=0;i<6;i++){
+      const lx=W*(0.07+i*0.172);
+      if(!isFinite(lx)||!isFinite(W)) continue;
+      const lg=ctx.createRadialGradient(lx,0,0,lx,0,W*0.15);
+      lg.addColorStop(0,'rgba(255,255,230,0.22)');
+      lg.addColorStop(0.5,'rgba(255,255,230,0.04)');
+      lg.addColorStop(1,'transparent');
+      ctx.fillStyle=lg; ctx.fillRect(0,0,W,H*0.22);
+    }
+  },
+
+  drawCourt(ctx,W,H){
+    const tl=this.w2s(-0.5, 0.005);
+    const tr=this.w2s( 0.5, 0.005);
+    const bl=this.w2s(-0.5, 0.995);
+    const br=this.w2s( 0.5, 0.995);
+
+    // Court surface — BWF badminton green, professional indoor court
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(tl.x,tl.y); ctx.lineTo(tr.x,tr.y);
+    ctx.lineTo(br.x,br.y); ctx.lineTo(bl.x,bl.y);
+    ctx.closePath();
+    ctx.clip();
+
+    // Court surface — BWF badminton green
+    // Real BWF courts: vivid medium green synthetic surface (#2e8b2e range)
+    // Distinct from tennis (yellow-green) and snooker (dark green)
+    ctx.fillStyle='#2d8a3e';
+    ctx.fillRect(0,0,W,H);
+
+    // Subtle mow stripes — same hue, tiny brightness only
+    for(let zi=0.01; zi<0.99; zi+=0.05){
+      const a2=this.w2s(-0.5,zi),       b2=this.w2s(0.5,zi);
+      const c2=this.w2s(-0.5,zi+0.025), d2=this.w2s(0.5,zi+0.025);
+      ctx.fillStyle = (Math.floor(zi/0.05)%2===0)
+        ? 'rgba(255,255,255,0.03)'
+        : 'rgba(0,0,0,0.03)';
+      ctx.beginPath();
+      ctx.moveTo(a2.x,a2.y); ctx.lineTo(b2.x,b2.y);
+      ctx.lineTo(d2.x,d2.y); ctx.lineTo(c2.x,c2.y);
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+
+    // ── BWF Court Lines — matching reference image ──
+    // x ∈[-0.5,0.5], z ∈[0,1]. z=0 far(CPU), z=1 near(player), z=0.5 net.
+    //
+    // From reference image:
+    //  - Outer doubles sidelines (full length)
+    //  - Inner singles sidelines (full length)
+    //  - Back alley lines near each baseline (doubles long service lines)
+    //  - Short service lines (smaller horizontal lines, closer to net)
+    //  - ONE continuous centre line running full length baseline-to-baseline
+    //  - Net across middle
+    //
+    // BWF proportions (13.4m long × 6.1m wide):
+    //   Singles inner width: 5.18m → ±0.4246
+    //   Doubles long service: 0.76m from baseline → 0.0567 of court length
+    //   Short service line: 1.98m from net → 0.1478 of half-court
+    //     → z=0.5-0.1478=0.3522 (far) and z=0.5+0.1478=0.6478 (near)
+
+    const WF  = 0.500;   // doubles outer sideline
+    const WS  = 0.4246;  // singles inner sideline
+    const ZF  = 0.005;   // far baseline
+    const ZN  = 0.995;   // near baseline
+    const ZNT = 0.500;   // net
+    const ZDLSF = ZF + 0.0567;   // doubles long service — far side (back alley boundary)
+    const ZDLSN = ZN - 0.0567;   // doubles long service — near side
+    const ZSSF  = ZNT - 0.1478;  // short service line — far side (z≈0.352)
+    const ZSSN  = ZNT + 0.1478;  // short service line — near side (z≈0.648)
+
+    const L=(x1,z1,x2,z2,lw,a)=>{
+      const A=this.w2s(x1,z1), B=this.w2s(x2,z2);
+      ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y);
+      ctx.strokeStyle=`rgba(255,255,255,${a*0.95})`; ctx.lineWidth=lw; ctx.stroke();
+    };
+
+    // 1. Outer doubles boundary (full perimeter)
+    L(-WF, ZF,  WF, ZF,  3.0, 0.95);  // far baseline
+    L(-WF, ZN,  WF, ZN,  3.0, 0.95);  // near baseline (player)
+    L(-WF, ZF, -WF, ZN,  3.0, 0.95);  // left doubles sideline
+    L( WF, ZF,  WF, ZN,  3.0, 0.95);  // right doubles sideline
+
+    // 2. Inner singles sidelines (full length)
+    L(-WS, ZF, -WS, ZN,  2.0, 0.82);
+    L( WS, ZF,  WS, ZN,  2.0, 0.82);
+
+    // 3. Back alley lines (parallel to baselines, near each end)
+    L(-WF, ZDLSF, WF, ZDLSF, 1.8, 0.78);  // far back alley
+    L(-WF, ZDLSN, WF, ZDLSN, 1.8, 0.78);  // near back alley
+
+    // 4. Short service lines (span only inner singles width)
+    L(-WS, ZSSF, WS, ZSSF, 1.8, 0.78);   // far short service line
+    L(-WS, ZSSN, WS, ZSSN, 1.8, 0.78);   // near short service line
+
+    // 5. Centre line — runs full length from near baseline to far baseline
+    //    This is the continuous vertical line down the middle of the court
+    L(0, ZF, 0, ZN, 1.6, 0.72);
+
+    // 6. Net line on floor
+    L(-WF, ZNT, WF, ZNT, 2.0, 0.45);
+  },
+
+  drawServeAim(ctx){
+    // Serve aim is restricted to the CPU's front service box
+    // ZSSF=0.352 to ZNT=0.500 (far), correct diagonal half only
+    const even = (this.pts.p + this.pts.c) % 2 === 0;
+    const serveRight = even;
+
+    // A/D nudges within the correct half of the box
+    let aimXBias = 0;
+    if(K.held['KeyA']) aimXBias = -0.10;
+    if(K.held['KeyD']) aimXBias =  0.10;
+    const WS = 0.4246;
+    const boxCX = serveRight ? -0.18 : 0.18;
+    const aimX = serveRight
+      ? clamp(boxCX + aimXBias, -WS, -0.02)
+      : clamp(boxCX + aimXBias,  0.02, WS);
+
+    // W/S adjusts depth — clamped inside front service box
+    let aimZ = 0.41;
+    if(K.held['KeyW']) aimZ = 0.37;
+    else if(K.held['KeyS']) aimZ = 0.46;
+    aimZ = clamp(aimZ, 0.355, 0.495); // never outside the box
+
+    const pt=this.w2s(aimX, aimZ, 0);
+    const pulse=0.5+0.5*Math.sin(Date.now()*0.006);
+    ctx.save();
+    ctx.globalAlpha=0.55+pulse*0.25;
+    ctx.strokeStyle='#c8a84b'; ctx.lineWidth=2;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.arc(pt.x,pt.y,14,0,Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle='rgba(200,168,75,0.8)'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(pt.x-20,pt.y); ctx.lineTo(pt.x+20,pt.y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pt.x,pt.y-12); ctx.lineTo(pt.x,pt.y+12); ctx.stroke();
+    ctx.fillStyle='rgba(200,168,75,0.9)';
+    ctx.font='bold 11px Barlow Condensed, sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.fillText('A/D = left/right  ·  W/S = depth  ·  F = serve', pt.x, pt.y-22);
+    ctx.restore();
+  },
+
+  drawShotAim(ctx){
+    const M=this.meter;
+    // Use the aim captured during hold — same as what will fire
+    const aimX     = M.aimX     || 0;
+    const aimDepth = M.aimDepth || null;
+
+    let aimZ;
+    switch(M.key){
+      case 'r': aimZ = aimDepth==='w'?0.10 : aimDepth==='s'?0.18 : 0.06; break;
+      case 'c': aimZ = aimDepth==='w'?0.44 : aimDepth==='s'?0.36 : 0.40; break;
+      case 't': aimZ = aimDepth==='w'?0.44 : aimDepth==='s'?0.56 : 0.50; break;
+      default:  aimZ = aimDepth==='w'?0.38 : aimDepth==='s'?0.22 : 0.30;
+    }
+
+    const pt=this.w2s(aimX, aimZ, 0);
+    const pulse=0.4+0.6*Math.sin(Date.now()*0.010);
+    const c=M.charge;
+    const col = c>=M.gs&&c<=M.ge ? '#2ea852' :
+                (c<M.gs-0.13||c>M.ge+0.13) ? '#c83232' : '#d4821a';
+
+    ctx.save();
+    ctx.globalAlpha=0.5+pulse*0.3;
+    ctx.strokeStyle=col; ctx.lineWidth=2.5;
+    ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.arc(pt.x,pt.y,16,0,Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha=0.7+pulse*0.2;
+    ctx.fillStyle=col;
+    ctx.beginPath(); ctx.arc(pt.x,pt.y,4,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=0.65;
+    ctx.fillStyle='rgba(255,255,255,0.8)';
+    ctx.font='bold 10px Barlow Condensed, sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    const dl=aimDepth==='w'?'SHORT':aimDepth==='s'?'DEEP':'MID';
+    const sl=aimX<-0.05?'◄':aimX>0.05?'►':'■';
+    ctx.fillText(`${sl} ${dl}`, pt.x, pt.y-20);
+    ctx.restore();
+  },
+
+  drawSmashIndicator(ctx){
+    if(!this.canSmash) return;
+    const P=this.P;
+    const pt=this.w2s(P.wx, P.wz, 0);
+    if(!isFinite(pt.x)||!isFinite(pt.y)) return;
+    const pulse=0.55+0.45*Math.sin((this.smashPulse||0)*0.18);
+    const sc=Math.max(0.15, pt.sc);
+    const bx=pt.x, by=pt.y - 185*sc;
+    const br2=Math.max(6, 22*sc);
+
+    ctx.save();
+
+    // Outer ring pulse — no gradient, just stroked circles
+    ctx.globalAlpha=0.5*pulse;
+    ctx.strokeStyle='#ff2222';
+    ctx.lineWidth=3*sc;
+    ctx.beginPath(); ctx.arc(bx, by, br2+8*pulse, 0, Math.PI*2); ctx.stroke();
+
+    // Badge fill
+    ctx.globalAlpha=0.90*pulse;
+    ctx.fillStyle='#cc0000';
+    ctx.beginPath(); ctx.arc(bx, by, br2, 0, Math.PI*2); ctx.fill();
+
+    // White border
+    ctx.strokeStyle='#ffffff'; ctx.lineWidth=2.5*sc;
+    ctx.beginPath(); ctx.arc(bx, by, br2, 0, Math.PI*2); ctx.stroke();
+
+    // Exclamation
+    ctx.fillStyle='#ffffff';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.font=`900 ${Math.max(10,22*sc)}px Barlow Condensed,sans-serif`;
+    ctx.globalAlpha=pulse;
+    ctx.fillText('!', bx, by);
+
+    // SMASH label below badge
+    ctx.globalAlpha=0.82*pulse;
+    ctx.fillStyle='#ff4444';
+    ctx.font=`700 ${Math.max(7,11*sc)}px Barlow Condensed,sans-serif`;
+    ctx.fillText('SMASH!', bx, by + br2 + 12*sc);
+
+    ctx.restore();
+  },
+
+  drawNet(ctx,W,H){
+    const Z_NET=0.5;
+    const W_FULL=0.5;
+    const leftPost  = this.w2s(-W_FULL, Z_NET);
+    const rightPost = this.w2s( W_FULL, Z_NET);
+    // Net is 1.55m tall at posts; court is 13.4m long.
+    // In world height units: 1.55/13.4 ≈ 0.116  → use ~0.12
+    const netH_L = this.w2s(-W_FULL, Z_NET, 0.12).y - leftPost.y;   // negative (goes up)
+    const netH_R = this.w2s( W_FULL, Z_NET, 0.12).y - rightPost.y;
+
+    // Post shadows
+    ctx.fillStyle='rgba(0,0,0,.2)';
+    ctx.fillRect(leftPost.x-4,leftPost.y,7,10);
+    ctx.fillRect(rightPost.x-3,rightPost.y,6,8);
+
+    // Net mesh — vertical strands
+    const steps=32;
+    for(let i=0;i<=steps;i++){
+      const t=i/steps, wx=-W_FULL+t;
+      const pt=this.w2s(wx,Z_NET);
+      // Interpolate net height in screen pixels
+      const h=netH_R+(netH_L-netH_R)*(1-t); // netH values are negative (upward)
+      ctx.strokeStyle='rgba(220,220,220,.2)'; ctx.lineWidth=0.8;
+      ctx.beginPath(); ctx.moveTo(pt.x,pt.y); ctx.lineTo(pt.x,pt.y+h); ctx.stroke();
+    }
+    // Horizontal net bands
+    for(let r=0;r<=5;r++){
+      ctx.beginPath();
+      ctx.strokeStyle=r===0?'rgba(255,255,255,.9)':'rgba(255,255,255,.16)';
+      ctx.lineWidth=r===0?2.5:0.8;
+      for(let i=0;i<=steps;i++){
+        const t=i/steps, wx=-W_FULL+t;
+        const pt=this.w2s(wx,Z_NET);
+        const h=netH_R+(netH_L-netH_R)*(1-t);
+        const ry=pt.y+h*(r/5);
+        if(i===0) ctx.moveTo(pt.x,ry); else ctx.lineTo(pt.x,ry);
+      }
+      ctx.stroke();
+    }
+    // Posts
+    ctx.fillStyle='#c8c8c8';
+    ctx.fillRect(leftPost.x-3,leftPost.y+netH_L-2,6,Math.abs(netH_L)+4);
+    ctx.fillRect(rightPost.x-3,rightPost.y+netH_R-2,6,Math.abs(netH_R)+4);
+    // Post caps
+    ctx.fillStyle='#e8e8e8';
+    ctx.fillRect(leftPost.x-4,leftPost.y+netH_L-5,8,5);
+    ctx.fillRect(rightPost.x-4,rightPost.y+netH_R-5,8,5);
+  },
+
+  drawShuttle(ctx){
+    const SH=this.SH;
+    if(SH.state==='dead') return;
+
+    const isLob = SH.shotType==='lob';
+
+    // ── Lob height arc and landing zone ──
+    if(isLob && SH.state==='flying' && SH.trail.length > 2){
+      let ax=SH.wx, az=SH.wz, ay=SH.wy;
+      let avx=SH.vx, avz=SH.vz, avy=SH.vy;
+      const g=1.1, arcDt=0.06;
+
+      ctx.save();
+      // Dashed arc trace
+      ctx.strokeStyle='rgba(255,220,80,0.45)';
+      ctx.lineWidth=2;
+      ctx.setLineDash([5,5]);
+      ctx.beginPath();
+      const startPt=this.w2s(ax,az,ay);
+      if(isFinite(startPt.x)&&isFinite(startPt.y)) ctx.moveTo(startPt.x, startPt.y);
+      for(let s=0;s<32;s++){
+        ax+=avx*arcDt; az+=avz*arcDt; ay+=avy*arcDt; avy-=g*arcDt;
+        if(ay<0) break;
+        const ap=this.w2s(ax,az,ay);
+        if(isFinite(ap.x)&&isFinite(ap.y)) ctx.lineTo(ap.x,ap.y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Landing zone — bigger, colour shows if player can smash
+      const landPt=this.w2s(ax,az,0);
+      if(isFinite(landPt.x)&&isFinite(landPt.y)){
+        const canSmashNow = this.canSmash;
+        const pulse2=0.55+0.45*Math.sin((this.smashPulse||0)*0.14);
+
+        // Outer glow ring
+        ctx.globalAlpha=0.25*pulse2;
+        ctx.fillStyle = canSmashNow ? '#ff3300' : 'rgba(255,200,50,0.5)';
+        ctx.beginPath(); ctx.arc(landPt.x, landPt.y, 26*landPt.sc, 0, Math.PI*2); ctx.fill();
+
+        // Main landing circle
+        ctx.globalAlpha=0.8;
+        ctx.strokeStyle = canSmashNow ? '#ff2200' : 'rgba(255,220,60,0.9)';
+        ctx.lineWidth = canSmashNow ? 3 : 2.5;
+        ctx.beginPath(); ctx.arc(landPt.x, landPt.y, 16*landPt.sc, 0, Math.PI*2); ctx.stroke();
+
+        // Inner cross
+        const cr = 8*landPt.sc;
+        ctx.globalAlpha=0.7;
+        ctx.strokeStyle = canSmashNow ? '#ff4400' : 'rgba(255,230,80,0.9)';
+        ctx.lineWidth=1.5;
+        ctx.beginPath();
+        ctx.moveTo(landPt.x-cr,landPt.y); ctx.lineTo(landPt.x+cr,landPt.y); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(landPt.x,landPt.y-cr); ctx.lineTo(landPt.x,landPt.y+cr); ctx.stroke();
+
+        // "SMASH ZONE" text when player is close enough
+        if(canSmashNow){
+          ctx.globalAlpha=0.9*pulse2;
+          ctx.fillStyle='#ff4400';
+          ctx.font=`700 ${Math.max(9,12*landPt.sc)}px Barlow Condensed,sans-serif`;
+          ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+          ctx.fillText('SMASH ZONE', landPt.x, landPt.y-22*landPt.sc);
+        }
+      }
+      ctx.restore();
+    }
+
+    // ── Trail ──
+    for(let i=1;i<SH.trail.length;i++){
+      const t=SH.trail[i], pt=this.w2s(t.wx,t.wz,t.wy);
+      const a=(1-i/SH.trail.length)*0.38;
+      const r=Math.max(0.8, 4*(1-i/SH.trail.length)*pt.sc);
+      // Lob trail is yellow/warm, smash is red, normal is white
+      const trailCol = isLob ? `rgba(255,220,100,${a})` :
+                       SH.shotType==='smash' ? `rgba(255,60,20,${a*1.4})` :
+                       `rgba(220,220,220,${a})`;
+      const trailR = SH.shotType==='smash' ? Math.max(1, 6*(1-i/SH.trail.length)*pt.sc) : Math.max(0.8, 4*(1-i/SH.trail.length)*pt.sc);
+      ctx.fillStyle=trailCol;
+      ctx.beginPath(); ctx.arc(pt.x,pt.y,trailR,0,Math.PI*2); ctx.fill();
+    }
+
+    const pt = this.w2s(SH.wx, SH.wz, SH.wy);
+    const sc = pt.sc;
+
+    // Ground shadow
+    const gs=this.w2s(SH.wx,SH.wz,0);
+    const sA=Math.max(0, 0.35-SH.wy*0.45);
+    ctx.save();
+    ctx.globalAlpha=sA;
+    ctx.fillStyle='rgba(0,0,0,0.7)';
+    ctx.beginPath(); ctx.ellipse(gs.x,gs.y, Math.max(0.5,8*sc), Math.max(0.2,3.5*sc), 0,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+
+    // Lob height indicator — vertical dotted line from shadow to shuttle when high
+    if(isLob && SH.wy > 0.12){
+      ctx.save();
+      ctx.globalAlpha=0.3;
+      ctx.strokeStyle='rgba(255,220,80,0.6)';
+      ctx.lineWidth=1.2;
+      ctx.setLineDash([3,4]);
+      ctx.beginPath(); ctx.moveTo(gs.x,gs.y); ctx.lineTo(pt.x,pt.y); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
+    // Direction tilt
+    const vHoriz=Math.sqrt(SH.vx*SH.vx+SH.vz*SH.vz)||0.001;
+    const tiltAngle = Math.atan2(-SH.vy, vHoriz * 6) + Math.PI*0.5;
+
+    ctx.save();
+    ctx.translate(pt.x, pt.y);
+    ctx.rotate(tiltAngle);
+
+    const R=8*sc;
+    const CK=5*sc;
+
+    // Feather skirt
+    ctx.fillStyle='rgba(245,245,242,0.92)';
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    for(let i=0;i<=16;i++){
+      const a=(i/16)*Math.PI*2;
+      const rx=Math.cos(a)*R*0.85;
+      const ry=Math.sin(a)*R*0.4 - R*1.2;
+      if(i===0) ctx.moveTo(rx,ry); else ctx.lineTo(rx,ry);
+    }
+    ctx.closePath(); ctx.fill();
+
+    ctx.strokeStyle='rgba(180,180,176,0.6)'; ctx.lineWidth=0.7*sc;
+    for(let i=0;i<8;i++){
+      const a=(i/8)*Math.PI*2;
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.lineTo(Math.cos(a)*R*0.9, Math.sin(a)*R*0.4-R*1.1);
+      ctx.stroke();
+    }
+    ctx.strokeStyle='rgba(200,200,196,0.55)'; ctx.lineWidth=1.2*sc;
+    ctx.beginPath(); ctx.ellipse(0,-R*1.15, R*0.8,R*0.35, 0,0,Math.PI*2); ctx.stroke();
+
+    // Cork — guard against zero CK
+    if(CK > 0.5){
+      const ckGrad=ctx.createRadialGradient(-CK*0.3,-CK*0.3,0, 0,0,CK);
+      ckGrad.addColorStop(0,'#f5dfa0'); ckGrad.addColorStop(1,'#c8a050');
+      ctx.fillStyle=ckGrad;
+    } else {
+      ctx.fillStyle='#d4a850';
+    }
+    ctx.beginPath(); ctx.arc(0,0,Math.max(1,CK),0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgba(255,255,240,0.6)';
+    ctx.beginPath(); ctx.arc(-CK*0.28,-CK*0.28,Math.max(0.5,CK*0.3),0,Math.PI*2); ctx.fill();
+
+    ctx.restore();
+  },
+
+  drawFigure3D(ctx,who){
+    const ent=who==='p'?this.P:this.C;
+    const jumpOff = ent.jumpY || 0;
+    const pt=this.w2s(ent.wx, ent.wz, jumpOff);
+    if(!isFinite(pt.x)||!isFinite(pt.y)) return;
+    const scRaw = pt.sc * 0.88;
+    const sc = Math.max(0.05, scRaw); // same formula for both player and CPU
+    const cfg=this.cfg.player;
+    const skin=who==='p'?cfg.skin:'#c8855a';
+    const kit =who==='p'?cfg.kit :'#1e2060';
+
+    // Always draw ground shadow — dramatically smaller when jumping
+    const gnd=this.w2s(ent.wx, ent.wz, 0);
+    if(isFinite(gnd.x)&&isFinite(gnd.y)){
+      const shrink = jumpOff > 0 ? Math.max(0.15, 1 - jumpOff * 3.5) : 1.0;
+      const fade   = jumpOff > 0 ? Math.max(0.04, 0.28 - jumpOff * 2.2) : 0.26;
+      const rx = Math.max(0.5, 22*gnd.sc*shrink);
+      const ry = Math.max(0.2, 8*gnd.sc*shrink);
+      ctx.save();
+      ctx.globalAlpha = fade;
+      ctx.fillStyle='rgba(0,0,0,0.70)';
+      ctx.beginPath();
+      ctx.ellipse(gnd.x, gnd.y, rx, ry, 0,0,Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // jumpScale always positive
+    const jumpScale = Math.max(0.05, jumpOff > 0.05 ? sc * (1 + jumpOff * 0.18) : sc);
+    drawFigure(ctx, pt.x, pt.y, jumpScale, skin, kit, ent.anim, ent.animF, who==='c', ent.facesLeft, false);
+
+    // Orange smash burst — radii always positive
+    if(ent.anim==='smash' && ent.animF >= 2 && jumpOff > 0.04){
+      const r1 = Math.max(1, 36*sc);
+      const r2 = Math.max(1, 56*sc);
+      ctx.save();
+      ctx.globalAlpha=0.60;
+      ctx.fillStyle='#ff5500';
+      ctx.beginPath(); ctx.arc(pt.x, pt.y-130*sc, r1, 0, Math.PI*2); ctx.fill();
+      ctx.globalAlpha=0.28;
+      ctx.fillStyle='#ffcc00';
+      ctx.beginPath(); ctx.arc(pt.x, pt.y-130*sc, r2, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+  },
+
+  drawParticles(ctx){
+    for(const p of this.particles){
+      const a=p.life/p.ml;
+      ctx.globalAlpha=a;
+      ctx.fillStyle=p.col;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  },
+};
+
+// ── HELPERS ─────────────────────────────────────────────────────
+function clamp(v,mn,mx){return Math.max(mn,Math.min(mx,v));}
+function rn(a,b){return a+Math.random()*(b-a);}
+
+// ── MOBILE CONTROLS ─────────────────────────────────────────
+// Touch joysticks for iOS/Android. Feeds into the same K object used by desktop.
+// Left joystick  → movement (WASD)
+// Right joystick → shot type by flick direction + aim during hold
+//   Flick UP    = Lob (R)     Flick DOWN   = Drop (C)
+//   Flick L/R   = Smash (T)   Tap/hold centre = Normal (F)
+// Serve button shown during serve state.
+
+const MobileControls = (() => {
+  let active = false;
+
+  // Each joystick state
+  const joys = {
+    left:  { el:null, stick:null, tid:null, ox:0, oy:0, dx:0, dy:0 },
+    right: { el:null, stick:null, tid:null, ox:0, oy:0, dx:0, dy:0,
+             active:false, shotKey:null, startX:0, startY:0 }
+  };
+
+  const DEAD = 12;   // deadzone px
+  const MAX  = 60;   // max stick travel px
+  const FLICK= 28;   // flick threshold px
+
+  function clampStick(v){ return Math.max(-MAX, Math.min(MAX, v)); }
+
+  function updateLeftKeys(){
+    const { dx, dy } = joys.left;
+    const adx = Math.abs(dx), ady = Math.abs(dy);
+    // Clear movement keys
+    K.held['KeyA'] = false; K.held['KeyD'] = false;
+    K.held['KeyW'] = false; K.held['KeyS'] = false;
+    if(adx > DEAD || ady > DEAD){
+      if(dx < -DEAD) K.held['KeyA'] = true;
+      if(dx >  DEAD) K.held['KeyD'] = true;
+      if(dy < -DEAD) K.held['KeyW'] = true;
+      if(dy >  DEAD) K.held['KeyS'] = true;
+    }
+  }
+
+  function updateRightKeys(){
+    const r = joys.right;
+    const { dx, dy } = r;
+    const adx = Math.abs(dx), ady = Math.abs(dy);
+
+    // Aim direction: feed into K for shot depth/direction
+    K.held['KeyA'] = K.held['KeyA'] || (dx < -DEAD*0.8 && r.active);
+    K.held['KeyD'] = K.held['KeyD'] || (dx >  DEAD*0.8 && r.active);
+    K.held['KeyW'] = K.held['KeyW'] || (dy < -DEAD*0.8 && r.active);
+    K.held['KeyS'] = K.held['KeyS'] || (dy >  DEAD*0.8 && r.active);
+
+    // Determine shot key from current drag direction
+    let shotKey = null;
+    if(r.active){
+      if(ady > DEAD && ady >= adx){
+        shotKey = dy < 0 ? 'r' : 'c';       // up=lob, down=drop
+      } else if(adx > DEAD && adx > ady){
+        shotKey = 't';                        // left/right = smash
+      } else if(adx < DEAD && ady < DEAD){
+        shotKey = 'f';                        // centre/tap = normal
+      }
+    }
+    r.shotKey = shotKey;
+
+    // Keep shot key held in K
+    K.held['KeyF'] = (r.active && r.shotKey === 'f');
+    K.held['KeyR'] = (r.active && r.shotKey === 'r');
+    K.held['KeyC'] = (r.active && r.shotKey === 'c');
+    K.held['KeyT'] = (r.active && r.shotKey === 't');
+
+    // Update label
+    const lbl = document.getElementById('joy-shot-lbl');
+    if(lbl){
+      const names = {f:'NORMAL', r:'LOB', c:'DROP', t:'SMASH'};
+      lbl.textContent = r.active && r.shotKey ? names[r.shotKey]||'' : '';
+    }
+  }
+
+  function releaseRight(){
+    const r = joys.right;
+    if(!r.active) return;
+    r.active = false;
+    // Fire K.just for shot key on release (mirrors keyup → keydown pattern)
+    if(r.shotKey){
+      const kmap = {f:'KeyF', r:'KeyR', c:'KeyC', t:'KeyT'};
+      const code = kmap[r.shotKey];
+      // The shot meter releases when K.held goes false — handled by updateMeter
+    }
+    K.held['KeyF'] = false; K.held['KeyR'] = false;
+    K.held['KeyC'] = false; K.held['KeyT'] = false;
+    r.shotKey = null;
+    // Reset stick position
+    if(r.stick) r.stick.style.transform = 'translate(-50%,-50%)';
+    const lbl = document.getElementById('joy-shot-lbl');
+    if(lbl) lbl.textContent = '';
+  }
+
+  function moveStick(stick, dx, dy){
+    if(!stick) return;
+    const cdx = clampStick(dx), cdy = clampStick(dy);
+    stick.style.transform = `translate(calc(-50% + ${cdx}px), calc(-50% + ${cdy}px))`;
+  }
+
+  function getJoyCenter(el){
+    const r = el.getBoundingClientRect();
+    return { x: r.left + r.width/2, y: r.top + r.height/2 };
+  }
+
+  function onTouchStart(e){
+    e.preventDefault();
+    for(const t of e.changedTouches){
+      const tx = t.clientX, ty = t.clientY;
+      // Determine which joystick was touched
+      for(const [side, j] of Object.entries({left:joys.left, right:joys.right})){
+        if(j.tid !== null) continue; // already tracked
+        const rect = j.el.getBoundingClientRect();
+        if(tx >= rect.left && tx <= rect.right && ty >= rect.top && ty <= rect.bottom){
+          j.tid = t.identifier;
+          const c = getJoyCenter(j.el);
+          j.ox = c.x; j.oy = c.y;
+          j.dx = tx - c.x; j.dy = ty - c.y;
+          if(side === 'right'){
+            joys.right.active = true;
+            joys.right.startX = tx; joys.right.startY = ty;
+            joys.right.shotKey = 'f'; // default to normal on first touch
+            K.held['KeyF'] = true;
+          }
+          moveStick(j.stick, j.dx, j.dy);
+        }
+      }
+    }
+    if(active === 'left') updateLeftKeys();
+    updateRightKeys();
+  }
+
+  function onTouchMove(e){
+    e.preventDefault();
+    for(const t of e.changedTouches){
+      for(const [side, j] of Object.entries({left:joys.left, right:joys.right})){
+        if(j.tid !== t.identifier) continue;
+        j.dx = t.clientX - j.ox;
+        j.dy = t.clientY - j.oy;
+        moveStick(j.stick, j.dx, j.dy);
+      }
+    }
+    updateLeftKeys();
+    updateRightKeys();
+  }
+
+  function onTouchEnd(e){
+    e.preventDefault();
+    for(const t of e.changedTouches){
+      for(const [side, j] of Object.entries({left:joys.left, right:joys.right})){
+        if(j.tid !== t.identifier) continue;
+        j.tid = null; j.dx = 0; j.dy = 0;
+        if(j.stick) j.stick.style.transform = 'translate(-50%,-50%)';
+        if(side === 'left'){
+          K.held['KeyA']=false; K.held['KeyD']=false;
+          K.held['KeyW']=false; K.held['KeyS']=false;
+        } else {
+          releaseRight();
+        }
+      }
+    }
+    updateLeftKeys();
+  }
+
+  function onServe(e){
+    e.preventDefault();
+    // Trigger serve: inject a K.just['KeyF']
+    K.just['KeyF'] = true;
+  }
+
+  function updateServeBtn(){
+    const btn = document.getElementById('mob-serve-btn');
+    if(!btn || !active) return;
+    const show = Game.gstate === 'serve' && Game.srv === 'p';
+    btn.style.display = show ? 'flex' : 'none';
+    btn.style.alignItems = 'center';
+    btn.style.justifyContent = 'center';
+  }
+
+  function init(){
+    // Only show on real touch devices
+    if(!('ontouchstart' in window) && navigator.maxTouchPoints < 1) return;
+
+    active = true;
+    const mc = document.getElementById('mobile-controls');
+    if(mc) mc.style.display = 'block';
+
+    // Hide keyboard hint on mobile
+    const ch = document.getElementById('ctrl-hint');
+    if(ch) ch.style.display = 'none';
+
+    joys.left.el    = document.getElementById('joy-left');
+    joys.left.stick = document.getElementById('joy-left-stick');
+    joys.right.el   = document.getElementById('joy-right');
+    joys.right.stick= document.getElementById('joy-right-stick');
+
+    // Single listener on the game canvas area for both joysticks
+    const mc2 = document.getElementById('mobile-controls');
+    mc2.addEventListener('touchstart',  onTouchStart,  {passive:false});
+    mc2.addEventListener('touchmove',   onTouchMove,   {passive:false});
+    mc2.addEventListener('touchend',    onTouchEnd,    {passive:false});
+    mc2.addEventListener('touchcancel', onTouchEnd,    {passive:false});
+
+    // Also hook into game loop to update serve button visibility
+    const origRender = Game.render.bind(Game);
+    Game.render = function(){ origRender(); updateServeBtn(); };
+
+    // Prevent default touch behaviours on the canvas (scroll, zoom)
+    const canvas = document.getElementById('gc');
+    if(canvas){
+      canvas.addEventListener('touchstart', e=>e.preventDefault(), {passive:false});
+      canvas.addEventListener('touchmove',  e=>e.preventDefault(), {passive:false});
+    }
+
+    // Suppress zoom on double-tap
+    document.addEventListener('touchstart', e=>{
+      if(e.touches.length > 1) e.preventDefault();
+    }, {passive:false});
+  }
+
+  return { init, onServe, isActive:()=>active };
+})();
+
+// ── BOOT ────────────────────────────────────────────────────────
+PC.init();
+// Initialise mobile touch controls (no-op on desktop)
+MobileControls.init();
+</script>
+</body>
+</html>
