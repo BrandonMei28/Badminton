@@ -812,7 +812,7 @@ const Game = {
       facesLeft:false,
       tgtX:-0.12, tgtZ:0.335,
       reactT:0, decided:false, willMiss:false, hitCD:0, serveT:0, graceT:0,
-      jumpY:0, jumpVY:0, isJumping:false, jumpFalling:false,
+      jumpY:0, jumpVY:0, isJumping:false, jumpFalling:false, willSmash:false,
     };
     // Shuttle
     this.SH = {
@@ -862,11 +862,13 @@ const Game = {
     // Track smash availability — lob coming, player UNDER the landing zone
     const SH=this.SH;
     const P=this.P;
-    const isIncomingLob = SH.shotType==='lob' && SH.owner==='c' && SH.state==='flying';
+    // Smash is available on: CPU lob shots AND very high shuttles (from bad/red-meter shots)
+    const isSmashable = SH.owner==='c' && SH.state==='flying' &&
+                        (SH.shotType==='lob' || SH.wy > 0.45);
     const shuttleInPlayerHalf = SH.wz > 0.50;
     const shuttleHigh = SH.wy > 0.15;
 
-    if(isIncomingLob && shuttleInPlayerHalf && shuttleHigh){
+    if(isSmashable && shuttleInPlayerHalf && shuttleHigh){
       // Compute where shuttle will land
       let ax=SH.wx, az=SH.wz, ay=SH.wy, avz=SH.vz, avx=SH.vx, avy=SH.vy;
       const g=1.1, dt2=0.05;
@@ -874,10 +876,9 @@ const Game = {
         ax+=avx*dt2; az+=avz*dt2; ay+=avy*dt2; avy-=g*dt2;
         if(ay<=0) break;
       }
-      // Player must be within 0.20 world units of landing zone
       const distToLand = Math.sqrt((P.wx-ax)**2 + (P.wz-az)**2);
-      this.canSmash = distToLand < 0.22;
-      this.smashLandX = ax; this.smashLandZ = az; // save for indicator
+      this.canSmash = distToLand < 0.24;
+      this.smashLandX = ax; this.smashLandZ = az;
     } else if(this.canSmash && (SH.wy <= 0 || SH.state!=='flying')){
       this.canSmash = false;
     }
@@ -1049,20 +1050,36 @@ const Game = {
     const M=this.meter, SH=this.SH, P=this.P;
     const sk=this.heldShotKey();
 
-    // Check proximity — can player actually reach this shuttle?
+    // ── Hit timing + proximity check ──
+    // Player can only start the meter when the shuttle is genuinely arriving:
+    //   1. Shuttle is in player's half
+    //   2. Player is close enough spatially
+    //   3. TIMING: shuttle must be close to arriving (< 0.55s away) or already very close.
+    //      If pressed too early (shuttle far away) or too late (shuttle past), meter won't start.
     if(!M.on && sk && SH.owner==='c' && SH.state==='flying'){
       const dx=SH.wx-P.wx, dz=SH.wz-P.wz;
       const dist=Math.sqrt(dx*dx+dz*dz);
       const shuttleInHalf = SH.wz >= 0.50;
-      // Max reach radius scales with how much time is left before shuttle lands
-      // timeToLand: positive means still falling, larger = more time
-      const timeToLand = SH.vy < 0 ? SH.wy / Math.abs(SH.vy) : 1.5;
-      // Player can reach if shuttle is in their half AND close enough OR has time to get there
-      const reachable = shuttleInHalf && (dist < 0.18 + timeToLand * P.speed * 0.6);
+
+      // Time until shuttle reaches ground (or 0 if already low)
+      const timeToLand = SH.vy < 0 ? SH.wy / Math.abs(SH.vy) : (SH.wy > 0 ? SH.wy : 0);
+
+      // Spatial reach: must be within striking distance
+      const spatialReach = dist < 0.22;
+
+      // Timing window: shuttle must be arriving soon (not too early, not past)
+      // Too early: timeToLand > 0.8s — shuttle is still far up in the arc
+      // Too late: shuttle already below hit height (wy < 0.03) but hasn't landed
+      const timingOk = timeToLand <= 0.75 && SH.wy > 0.02;
+
+      // Shuttle must also be moving toward player (not away)
+      const movingToward = SH.vz > 0; // positive vz = coming toward player baseline
+
+      const reachable = shuttleInHalf && spatialReach && timingOk && movingToward;
       if(reachable){
         this.startMeter(sk);
       }
-      // If not reachable, key is ignored — shuttle will drop
+      // If not reachable (too early, too late, too far) — shuttle drops, point to CPU
     }
 
     if(M.on){
@@ -1222,42 +1239,49 @@ const Game = {
     let errX, errZ;
 
     if(q==='g'){
-      // Perfect — very precise
-      errX = type==='smash' ? 0.04 : 0.015 + (5-statKey)*0.008;
-      errZ = type==='smash' ? 0.02 : 0.015;
+      // Perfect — precise, goes exactly where aimed
+      errX = type==='smash' ? 0.04 : 0.012 + (5-statKey)*0.006;
+      errZ = type==='smash' ? 0.02 : 0.012;
+
     } else if(q==='o'){
-      // Decent — slight inaccuracy, occasional mis-hit
-      errX = 0.06 + (5-statKey)*0.015;
-      errZ = 0.05;
-      // ~20% chance of shot going wrong
-      if(Math.random() < 0.20){
-        if(type==='drop'){
-          // Drop into net or pops up
-          const mishap = Math.random();
-          if(mishap < 0.35){
-            type='drop'; peak=0.08; tz=0.499; // clips net
-          } else {
-            type='lob'; peak=0.45; tz=0.15+rn(0,0.05); // pops up for smash
-          }
-        } else if(type==='normal'){
-          // Goes slightly long/wide
-          errX += 0.10; errZ += 0.08;
+      // Orange — noticeably off, clear risk of mishit
+      errX = 0.10 + (5-statKey)*0.020;
+      errZ = 0.09;
+      // 45% chance something goes wrong on orange
+      if(Math.random() < 0.45){
+        const mishap = Math.random();
+        if(type==='smash'){
+          // Bad smash: skims net or goes wide
+          if(mishap < 0.40){ type='normal'; tz=0.499; peak=0.06; } // net
+          else { errX += 0.15; } // wide
+        } else if(type==='drop'){
+          if(mishap < 0.45){ type='drop'; peak=0.07; tz=0.499; } // nets
+          else { type='lob'; peak=0.48; tz=0.14+rn(0,0.05); } // pops up
+        } else if(type==='lob'){
+          // Short lob — easy for CPU to smash
+          tz = 0.20 + rn(0, 0.06); peak=0.55;
+        } else {
+          // Normal shot: short/wide
+          errX += 0.13; errZ += 0.10;
         }
       }
+
     } else {
-      // Red — bad shot, major consequences
+      // Red — major consequences, high lob for CPU to smash OR net/out
       const mishap = Math.random();
-      if(mishap < 0.30){
-        // Hit into net — lands just past the line in CPU half
-        type='normal'; tz=0.499; peak=0.05; // barely clears / hits net
-      } else if(mishap < 0.65){
-        // Pops up as a perfect lob for CPU to smash
-        type='lob'; tz=0.12+rn(0,0.05); peak=0.85; // very high, easy smash
-        errX = 0.05; errZ = 0.04;
+      if(mishap < 0.25){
+        // Straight into net
+        type='normal'; tz=0.499; peak=0.04;
+        errX=0.03; errZ=0.01;
+      } else if(mishap < 0.70){
+        // Very high easy lob — CPU will almost certainly smash this
+        type='lob'; tz=0.16+rn(0,0.06); peak=0.95;
+        errX=0.04; errZ=0.03;
       } else {
-        // Hits wide/long (out)
-        errX = 0.20 + rn(0,0.10);
-        errZ = 0.15;
+        // Hits out — wide or long
+        const goWide = Math.random() < 0.5;
+        if(goWide){ errX=0.30+rn(0,0.12); errZ=0.05; }
+        else       { errX=0.05; errZ=0.22+rn(0,0.08); }
       }
     }
 
@@ -1287,22 +1311,32 @@ const Game = {
       C.tgtX = C.wx; C.tgtZ = C.wz;
 
     } else if(shuttleComingToCPU){
-      // React after reaction delay — predict landing and move there
       C.reactT -= dt;
       if(C.reactT <= 0){
         const err = dcfg.errX;
         if(Math.random() < dcfg.missP){
-          // Intentional miss: move wrong direction
           C.tgtX = rn(-0.35, 0.35);
           C.tgtZ = 0.20 + rn(-0.08, 0.08);
           C.willMiss = true;
         } else {
-          // Predict: extrapolate shuttle position forward slightly
           const lookahead = Math.min(0.4, SH.wy > 0 ? SH.wy/Math.max(0.01,Math.abs(SH.vy)) : 0.3);
           const predX = clamp(SH.wx + SH.vx * lookahead, -0.44, 0.44);
           const predZ = clamp(SH.wz + SH.vz * lookahead, 0.04, 0.46);
-          C.tgtX = clamp(predX + rn(-err, err), -0.44, 0.44);
-          C.tgtZ = clamp(predZ + rn(-err*0.4, err*0.4), 0.04, 0.46);
+
+          // For high lobs: move FORWARD (toward net) based on smashP
+          // Higher smashP = more aggressive forward positioning for smash
+          const isIncomingLob = SH.shotType === 'lob' && SH.wy > 0.18;
+          if(isIncomingLob && Math.random() < dcfg.smashP){
+            // Position to smash: move toward where the lob will be at peak height
+            // Smash position is mid-court, in line with the shuttle's x
+            C.tgtX = clamp(predX + rn(-err, err), -0.42, 0.42);
+            C.tgtZ = clamp(predZ * 0.6 + 0.38 * 0.4, 0.30, 0.45); // push forward
+            C.willSmash = true;
+          } else {
+            C.tgtX = clamp(predX + rn(-err, err), -0.44, 0.44);
+            C.tgtZ = clamp(predZ + rn(-err*0.4, err*0.4), 0.04, 0.46);
+            C.willSmash = false;
+          }
           C.willMiss = false;
         }
         C.reactT = 0;
@@ -1319,6 +1353,7 @@ const Game = {
       C.decided = false;
       C.reactT = dcfg.reactMs / 1000;
       C.willMiss = false;
+      C.willSmash = false;
     }
 
     // Move toward target
@@ -1386,10 +1421,10 @@ const Game = {
       return;
     }
 
-    // Smash ONLY when receiving a genuinely high lob — not just any shot
-    const isHighLob = SH.shotType==='lob' && SH.wy > 0.25;
-    const atFront   = C.wz > 0.38;
-    const doSmash   = isHighLob && atFront;  // must be high lob AND at front
+    // CPU smashes if: flagged willSmash (moved into position for it) OR very high lob
+    const isHighLob     = SH.shotType==='lob' && SH.wy > 0.12; // any reasonable lob height
+    const isVeryHighLob = SH.shotType==='lob' && SH.wy > 0.40;
+    const doSmash = C.willSmash || isVeryHighLob || (isHighLob && Math.random() < dcfg.smashP);
 
     let type, peak, tz;
     if(doSmash){
@@ -1443,7 +1478,7 @@ const Game = {
 
     this.fireShuttle('c', C.wx, C.wz, aimX, clamp(tz,0.52,0.96), peak, type);
     this.spawnHit(C.wx, C.wz);
-    C.willMiss=false; C.decided=false;
+    C.willMiss=false; C.decided=false; C.willSmash=false;
   },
 
   // ── SHUTTLE ──
@@ -1734,6 +1769,7 @@ const Game = {
     this.drawFigure3D(ctx,'c');
     this.drawFigure3D(ctx,'p');
     if(this.canSmash && !this.meter.on) this.drawSmashIndicator(ctx);
+    if(this.C.willSmash) this.drawCPUSmashIndicator(ctx);
     this.drawParticles(ctx);
   },
 
@@ -2013,6 +2049,49 @@ const Game = {
     ctx.fillStyle='#ff4444';
     ctx.font=`700 ${Math.max(7,11*sc)}px Barlow Condensed,sans-serif`;
     ctx.fillText('SMASH!', bx, by + br2 + 12*sc);
+
+    ctx.restore();
+  },
+
+  drawCPUSmashIndicator(ctx){
+    // Warn player that CPU is about to smash — orange badge above CPU
+    const C=this.C;
+    const pt=this.w2s(C.wx, C.wz, 0);
+    if(!isFinite(pt.x)||!isFinite(pt.y)) return;
+    const pulse=0.55+0.45*Math.sin((this.smashPulse||0)*0.22);
+    const sc=Math.max(0.12, pt.sc);
+    const bx=pt.x, by=pt.y - 185*sc;
+    const br2=Math.max(5, 18*sc);
+
+    ctx.save();
+
+    // Pulsing outer ring — orange/amber to distinguish from player's red
+    ctx.globalAlpha=0.45*pulse;
+    ctx.strokeStyle='#ff8800';
+    ctx.lineWidth=3*sc;
+    ctx.beginPath(); ctx.arc(bx, by, br2+7*pulse, 0, Math.PI*2); ctx.stroke();
+
+    // Badge — dark orange
+    ctx.globalAlpha=0.85*pulse;
+    ctx.fillStyle='#cc5500';
+    ctx.beginPath(); ctx.arc(bx, by, br2, 0, Math.PI*2); ctx.fill();
+
+    // White border
+    ctx.strokeStyle='#ffffff'; ctx.lineWidth=2*sc;
+    ctx.beginPath(); ctx.arc(bx, by, br2, 0, Math.PI*2); ctx.stroke();
+
+    // ⚡ lightning bolt or ! symbol
+    ctx.fillStyle='#ffffff';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.font=`900 ${Math.max(9,18*sc)}px Barlow Condensed,sans-serif`;
+    ctx.globalAlpha=pulse;
+    ctx.fillText('!', bx, by);
+
+    // Label
+    ctx.globalAlpha=0.75*pulse;
+    ctx.fillStyle='#ffaa44';
+    ctx.font=`700 ${Math.max(6,9*sc)}px Barlow Condensed,sans-serif`;
+    ctx.fillText('SMASH', bx, by + br2 + 10*sc);
 
     ctx.restore();
   },
