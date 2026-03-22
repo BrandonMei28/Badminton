@@ -1519,6 +1519,29 @@ const Game = {
     else                aimX =  rn(-0.06,0.06);
     aimX = clamp(aimX - Math.sign(this.P.wx)*0.12*dcfg.smashP, -0.44, 0.44);
 
+    // ── CPU shot quality ──
+    // missP drives how often CPU makes a bad hit (easy=0.22, normal=0.04, hard=0.01, expert=0)
+    // reachQuality < 0.5 also adds extra error when CPU is slightly stretched
+    const stretchErr = reachQuality < 0.5 ? (0.5 - reachQuality) * 0.4 : 0;
+    const cpuMishitChance = dcfg.missP * 0.6 + stretchErr;
+    if(!doSmash && Math.random() < cpuMishitChance){
+      const mishap = Math.random();
+      if(mishap < 0.45){
+        // Pops up a smashable lob — player can attack
+        type='lob'; peak=0.54;
+        tz = clamp(0.72 + rn(-0.05, 0.08), 0.65, 0.82); // mid-court, not deep — easier to smash
+        aimX = clamp(aimX + rn(-0.12, 0.12), -0.40, 0.40);
+        this.canSmash = true; // signal player can smash this
+      } else if(mishap < 0.75){
+        // Weak shot, slightly wide or short
+        aimX = clamp(aimX + rn(-0.15, 0.15), -0.44, 0.44);
+        tz   = clamp(tz   + rn(-0.08, 0.08), 0.52, 0.92);
+      } else {
+        // Clips net or very short — drops near net
+        type='drop'; peak=0.10; tz = 0.54 + rn(-0.02, 0.02);
+      }
+    }
+
     C.anim = doSmash ? 'smash' : (C.wx < SH.wx ? 'backhand' : 'forehand');
     C.animF = 0;
     C.facesLeft = aimX < C.wx;
