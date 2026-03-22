@@ -690,10 +690,10 @@ function rRect(ctx,x,y,w,h,r){
 
 // ── DIFFICULTY CONFIGS ──────────────────────────────────────────
 const DCFG = {
-  easy:   {speed:0.38, reactMs:700, errX:0.14, smashP:0.06, missP:0.32, dropP:0.18, lobP:0.20},
-  normal: {speed:0.52, reactMs:300, errX:0.07, smashP:0.30, missP:0.07, dropP:0.22, lobP:0.25},
-  hard:   {speed:0.66, reactMs:120, errX:0.03, smashP:0.52, missP:0.01, dropP:0.22, lobP:0.22},
-  expert: {speed:0.82, reactMs:50,  errX:0.012,smashP:0.72, missP:0.00, dropP:0.20, lobP:0.22},
+  easy:   {speed:0.46, reactMs:550, errX:0.11, smashP:0.15, missP:0.22, dropP:0.18, lobP:0.15},
+  normal: {speed:0.58, reactMs:220, errX:0.055,smashP:0.40, missP:0.04, dropP:0.22, lobP:0.18},
+  hard:   {speed:0.72, reactMs:100, errX:0.025,smashP:0.60, missP:0.01, dropP:0.22, lobP:0.18},
+  expert: {speed:0.86, reactMs:40,  errX:0.010,smashP:0.80, missP:0.00, dropP:0.20, lobP:0.18},
 };
 
 // ── KEYS ────────────────────────────────────────────────────────
@@ -813,6 +813,7 @@ const Game = {
       tgtX:-0.12, tgtZ:0.335,
       reactT:0, decided:false, willMiss:false, hitCD:0, serveT:0, graceT:0,
       jumpY:0, jumpVY:0, isJumping:false, jumpFalling:false, willSmash:false,
+      letLandDecided:null,
     };
     // Shuttle
     this.SH = {
@@ -1015,7 +1016,7 @@ const Game = {
     else if(K.held['KeyS']) targetZ = 0.46 + rn(-0.02,0.02); // short, near net
     else                    targetZ = 0.41 + rn(-0.02,0.02); // middle of front box
 
-    this.fireShuttle('p', P.wx, P.wz, targetX, targetZ, 0.32, 'normal');
+    this.fireShuttle('p', P.wx, P.wz, targetX, targetZ, 0.32, 'serve');
     this.C.graceT = 1.0; // CPU stays at serve position for 1s to receive
     this.gstate = 'rally';
     document.getElementById('serve-b').classList.remove('vis');
@@ -1129,15 +1130,15 @@ const Game = {
     // Stat bonus
     const sStat = (P.facesLeft ? this.cfg.player.stats.backhand : this.cfg.player.stats.forehand) / 5;
 
-    // Green zone: wider for easy shots + good stats
-    const greenW = 0.10 + ease*0.18 + sStat*0.07;
-    const ctr = 0.48 + rn(-0.05, 0.05);
+    // Green zone: narrower for more challenge — max width capped at 0.22
+    const greenW = 0.07 + ease*0.15 + sStat*0.05;  // tighter zone
+    const ctr = 0.48 + rn(-0.06, 0.06);
     M.gs = Math.max(0.06, ctr - greenW/2);
     M.ge = Math.min(0.94, ctr + greenW/2);
 
-    // Meter speed: significantly faster — more challenging
-    // Range: 0.65 (easy, close) → 3.2 (barely reaching)
-    M.speed = 0.65 + (1 - ease) * 2.55;
+    // Meter speed: faster across the board — more demanding timing
+    // Range: 0.90 (easy/close) → 3.8 (barely reaching)
+    M.speed = 0.90 + (1 - ease) * 2.90;
 
     // Slowmo: always on — physics pauses but meter fills at real-time speed
     this.slowmo = true;
@@ -1214,8 +1215,14 @@ const Game = {
     switch(key){
       case 'r': // Lob
         type='lob';
-        tz   = aimDepth==='w' ? 0.10 : aimDepth==='s' ? 0.18 : 0.06+rn(0,.03);
-        peak = 0.62; // TALL arc — lob should be visually distinct
+        // Lob must always land near the CPU baseline (z=0.02–0.18)
+        // Depth aim: W=deeper toward back, S=slightly shorter, default=deep
+        tz   = aimDepth==='w' ? 0.05 : aimDepth==='s' ? 0.15 : 0.08+rn(0,.04);
+        // Clamp so shot always lands in CPU half, well inside baseline
+        tz   = clamp(tz, 0.03, 0.18);
+        // Peak scales with distance so near-net lobs don't get excessive velocity
+        // Minimum distance from player to target gives natural arc height
+        peak = 0.55; // fixed — net clearance boost handles the rest
         break;
       case 'c': // Drop
         type='drop';
@@ -1244,53 +1251,52 @@ const Game = {
       errZ = type==='smash' ? 0.02 : 0.012;
 
     } else if(q==='o'){
-      // Orange — noticeably off, clear risk of mishit
-      errX = 0.10 + (5-statKey)*0.020;
-      errZ = 0.09;
-      // 45% chance something goes wrong on orange
-      if(Math.random() < 0.45){
+      // Orange — clear risk, 60% chance of something bad
+      errX = 0.12 + (5-statKey)*0.022;
+      errZ = 0.10;
+      if(Math.random() < 0.60){
         const mishap = Math.random();
         if(type==='smash'){
-          // Bad smash: skims net or goes wide
-          if(mishap < 0.40){ type='normal'; tz=0.499; peak=0.06; } // net
-          else { errX += 0.15; } // wide
+          if(mishap < 0.45){ type='normal'; tz=0.499; peak=0.06; }   // nets
+          else { errX += 0.18; }                                        // wide/out
         } else if(type==='drop'){
-          if(mishap < 0.45){ type='drop'; peak=0.07; tz=0.499; } // nets
-          else { type='lob'; peak=0.48; tz=0.14+rn(0,0.05); } // pops up
+          if(mishap < 0.40){ type='drop'; peak=0.07; tz=0.499; }      // clips net
+          else { type='lob'; peak=0.55; tz=0.16+rn(0,0.06); }         // high easy lob
         } else if(type==='lob'){
-          // Short lob — easy for CPU to smash
-          tz = 0.20 + rn(0, 0.06); peak=0.55;
+          tz = 0.22 + rn(0, 0.06); peak=0.60;                          // short lob = smashable
         } else {
-          // Normal shot: short/wide
-          errX += 0.13; errZ += 0.10;
+          // Normal: wide or long out
+          const goOut = Math.random();
+          if(goOut < 0.45){ errX += 0.18; }                            // wide
+          else { errZ += 0.14; }                                        // long
         }
       }
 
     } else {
-      // Red — major consequences, high lob for CPU to smash OR net/out
+      // Red — almost always a bad outcome
       const mishap = Math.random();
-      if(mishap < 0.25){
+      if(mishap < 0.28){
         // Straight into net
-        type='normal'; tz=0.499; peak=0.04;
-        errX=0.03; errZ=0.01;
-      } else if(mishap < 0.70){
-        // Very high easy lob — CPU will almost certainly smash this
-        type='lob'; tz=0.16+rn(0,0.06); peak=0.95;
-        errX=0.04; errZ=0.03;
+        type='normal'; tz=0.499; peak=0.04; errX=0.02; errZ=0.01;
+      } else if(mishap < 0.72){
+        // Very high, slow lob — CPU will smash
+        type='lob'; tz=0.18+rn(0,0.07); peak=1.0; errX=0.03; errZ=0.02;
       } else {
-        // Hits out — wide or long
-        const goWide = Math.random() < 0.5;
-        if(goWide){ errX=0.30+rn(0,0.12); errZ=0.05; }
-        else       { errX=0.05; errZ=0.22+rn(0,0.08); }
+        // Hits way out
+        errX = 0.35 + rn(0, 0.14);
+        errZ = 0.24 + rn(0, 0.10);
       }
     }
 
     const tx  = type==='smash'
       ? clamp(aimX + rn(-errX, errX), -0.42, 0.42)
       : clamp(aimXRaw + rn(-errX, errX), -0.46, 0.46);
+    // Lob MUST always land inside CPU court (z < 0.5), never past baseline
     const tzF = type==='smash'
       ? clamp(tz + rn(-errZ, errZ), 0.33, 0.46)
-      : clamp(tz + rn(-errZ, errZ), 0.02, 0.48);
+      : type==='lob'
+        ? clamp(tz + rn(-errZ, errZ), 0.02, 0.46)  // lob: strictly inside CPU half
+        : clamp(tz + rn(-errZ, errZ), 0.02, 0.48);
 
     this.fireShuttle('p', P.wx, P.wz, tx, tzF, peak, type);
     this.spawnHit(P.wx, P.wz);
@@ -1311,36 +1317,36 @@ const Game = {
       C.tgtX = C.wx; C.tgtZ = C.wz;
 
     } else if(shuttleComingToCPU){
-      C.reactT -= dt;
-      if(C.reactT <= 0){
-        const err = dcfg.errX;
-        if(Math.random() < dcfg.missP){
-          C.tgtX = rn(-0.35, 0.35);
-          C.tgtZ = 0.20 + rn(-0.08, 0.08);
-          C.willMiss = true;
-        } else {
-          const lookahead = Math.min(0.4, SH.wy > 0 ? SH.wy/Math.max(0.01,Math.abs(SH.vy)) : 0.3);
-          const predX = clamp(SH.wx + SH.vx * lookahead, -0.44, 0.44);
-          const predZ = clamp(SH.wz + SH.vz * lookahead, 0.04, 0.46);
-
-          // For high lobs: move FORWARD (toward net) based on smashP
-          // Higher smashP = more aggressive forward positioning for smash
-          const isIncomingLob = SH.shotType === 'lob' && SH.wy > 0.18;
-          if(isIncomingLob && Math.random() < dcfg.smashP){
-            // Position to smash: move toward where the lob will be at peak height
-            // Smash position is mid-court, in line with the shuttle's x
-            C.tgtX = clamp(predX + rn(-err, err), -0.42, 0.42);
-            C.tgtZ = clamp(predZ * 0.6 + 0.38 * 0.4, 0.30, 0.45); // push forward
-            C.willSmash = true;
+      // If already decided this shot is going out, hold still — no target updates
+      if(C.letLandDecided === true){
+        C.tgtX = C.wx; C.tgtZ = C.wz; // stay put, watch it land
+      } else {
+        C.reactT -= dt;
+        if(C.reactT <= 0){
+          const err = dcfg.errX;
+          if(Math.random() < dcfg.missP){
+            C.tgtX = rn(-0.35, 0.35);
+            C.tgtZ = 0.20 + rn(-0.08, 0.08);
+            C.willMiss = true;
           } else {
-            C.tgtX = clamp(predX + rn(-err, err), -0.44, 0.44);
-            C.tgtZ = clamp(predZ + rn(-err*0.4, err*0.4), 0.04, 0.46);
-            C.willSmash = false;
+            const lookahead = Math.min(0.4, SH.wy > 0 ? SH.wy/Math.max(0.01,Math.abs(SH.vy)) : 0.3);
+            const predX = clamp(SH.wx + SH.vx * lookahead, -0.44, 0.44);
+            const predZ = clamp(SH.wz + SH.vz * lookahead, 0.04, 0.46);
+            const isIncomingLob = SH.shotType === 'lob' && SH.wy > 0.18;
+            if(isIncomingLob && Math.random() < dcfg.smashP){
+              C.tgtX = clamp(predX + rn(-err, err), -0.42, 0.42);
+              C.tgtZ = clamp(predZ * 0.6 + 0.38 * 0.4, 0.30, 0.45);
+              C.willSmash = true;
+            } else {
+              C.tgtX = clamp(predX + rn(-err, err), -0.44, 0.44);
+              C.tgtZ = clamp(predZ + rn(-err*0.4, err*0.4), 0.04, 0.46);
+              C.willSmash = false;
+            }
+            C.willMiss = false;
           }
-          C.willMiss = false;
+          C.reactT = 0;
         }
-        C.reactT = 0;
-      }
+      } // end letLandDecided else
 
     } else if(C.graceT > 0){
       // Grace period: player just served — CPU waits at serve position to return
@@ -1382,16 +1388,34 @@ const Game = {
 
     // Hit shuttle when in reach
     if(shuttleComingToCPU && C.hitCD <= 0 && !C.willMiss){
-      // Smashes are much harder to return — smaller reach window
       const reach = SH.shotType==='smash' ? 0.10 : 0.18;
-      // Smash height drops very fast — CPU must be right under it
       const maxHeight = SH.shotType==='smash' ? 0.30 : 0.65;
       const sd = Math.sqrt((SH.wx-C.wx)**2 + (SH.wz-C.wz)**2);
       if(sd < reach && SH.wy < maxHeight){
-        this.cpuHit(dcfg);
-        C.hitCD = 0.35;
+
+        // Decide ONCE whether this shot will be out/net — cache result to avoid per-frame jitter
+        if(C.letLandDecided === undefined || C.letLandDecided === null){
+          let px=SH.wx, pz=SH.wz, py=SH.wy, pvx=SH.vx, pvz=SH.vz, pvy=SH.vy;
+          const g2=1.1, step=0.04;
+          for(let i=0;i<60;i++){
+            px+=pvx*step; pz+=pvz*step; py+=pvy*step; pvy-=g2*step;
+            if(py<=0) break;
+          }
+          const willBeOut        = Math.abs(px)>0.50 || pz<0.005 || pz>0.995;
+          const willHitNet       = SH.owner==='p' && SH.vz<0 && SH.wz<0.52 && SH.wy<0.12;
+          const willLandPlrHalf  = pz > 0.50;
+          C.letLandDecided = willBeOut || willHitNet || willLandPlrHalf;
+        }
+
+        if(!C.letLandDecided){
+          this.cpuHit(dcfg);
+          C.hitCD = 0.35;
+        }
+        // If letting it land: do nothing — shuttle will score naturally
       }
     }
+    // Reset letLandDecided when shuttle is no longer coming
+    if(!shuttleComingToCPU) C.letLandDecided = null;
   },
 
   cpuHit(dcfg){
@@ -1402,15 +1426,15 @@ const Game = {
     const reachQuality = Math.max(0, 1 - sd/0.18) * 0.6 + Math.min(1, timeLeft/0.5) * 0.4;
 
     const returningSmash = SH.shotType==='smash';
-    // Don't force pop-up lob when receiving a serve (shuttle is low, normal)
-    const isServeReturn = SH.wy < 0.15 && Math.abs(SH.vz) < 0.6;
-    const barelyReached = returningSmash ||
-      (!isServeReturn && reachQuality < 0.25) ||
-      (!isServeReturn && dcfg.missP > 0 && Math.random() < 0.12);
+    // Serve return: detected by shot type — completely reliable
+    const isServeReturn = SH.shotType==='serve';
+    // barelyReached: only when truly out of position AND not a serve (CPU is always ready for serve)
+    const barelyReached = !isServeReturn && returningSmash;
+    // Note: removed reachQuality threshold — CPU should handle most shots cleanly
 
     if(barelyReached){
-      const peak = returningSmash ? 0.75 + rn(0,0.10) : 0.68 + rn(0,0.12);
-      const tz   = returningSmash ? 0.68+rn(-0.04,0.04) : 0.70+rn(-0.05,0.05);
+      const peak = returningSmash ? 0.75 + rn(0,0.10) : 0.65 + rn(0,0.10);
+      const tz   = returningSmash ? 0.88+rn(-0.03,0.03) : 0.90+rn(-0.03,0.04);
       const tx   = clamp(this.P.wx*0.3 + rn(-0.15,0.15), -0.42, 0.42);
       C.anim='forehand'; C.animF=0;
       setTimeout(()=>{ C.anim='idle'; }, 380);
@@ -1421,38 +1445,69 @@ const Game = {
       return;
     }
 
-    // CPU smashes if: flagged willSmash (moved into position for it) OR very high lob
-    const isHighLob     = SH.shotType==='lob' && SH.wy > 0.12; // any reasonable lob height
+    const isHighLob     = SH.shotType==='lob' && SH.wy > 0.12;
     const isVeryHighLob = SH.shotType==='lob' && SH.wy > 0.40;
     const doSmash = C.willSmash || isVeryHighLob || (isHighLob && Math.random() < dcfg.smashP);
 
     let type, peak, tz;
     if(doSmash){
       type='smash'; peak=0.05;
-      tz = 0.60 + rn(-0.05, 0.08);
-    } else {
-      const rv = Math.random();
-      // Normal is dominant (55%), drop is common (28%), lob is rare (17%)
-      // Lob is only natural after drop; otherwise CPU plays real badminton shots
-      const lastType = SH.shotType;
-      const dropChance   = 0.20 + dcfg.dropP * 0.4;
-      const lobChance    = lastType==='drop' ? 0.22 : 0.10;  // lob after drop only
-      // normalChance fills the rest
+      tz = 0.60 + rn(-0.04, 0.06);
 
-      if(rv < dropChance){
+    } else if(isServeReturn){
+      // Serve return: NO lob — play strategic normal or drop
+      const rv = Math.random();
+      if(rv < dcfg.dropP + 0.05){
         type='drop'; peak=0.14;
-        tz = 0.54 + rn(-0.03, 0.04);
-      } else if(rv < dropChance + lobChance){
-        type='lob'; peak=0.54;
-        tz = 0.87 + rn(-0.04, 0.04);
+        tz = 0.55 + rn(-0.03, 0.03);
       } else {
         type='normal'; peak=0.26;
-        // Good variety of normal shot depths
         const d = Math.random();
-        if(d < 0.25)      tz = 0.57 + rn(-0.03,0.03); // short
-        else if(d < 0.55) tz = 0.68 + rn(-0.04,0.04); // mid
-        else if(d < 0.80) tz = 0.78 + rn(-0.04,0.04); // deep-mid
-        else              tz = 0.86 + rn(-0.03,0.03); // deep push
+        if(d < 0.30)      tz = 0.58 + rn(-0.03,0.03);  // short return
+        else if(d < 0.65) tz = 0.70 + rn(-0.04,0.04);  // mid
+        else              tz = 0.83 + rn(-0.03,0.03);   // deep
+      }
+
+    } else {
+      // Normal rally — context-aware strategic shot selection
+      // Real badminton mix: ~45% normal, ~25% drop, ~20% lob, ~10% smash (from rally)
+      // Adjust per difficulty and situation
+      const rv = Math.random();
+      const lastType = SH.shotType;
+      const atBack   = C.wz < 0.15;  // CPU near their own baseline
+      const atFront  = C.wz > 0.35;  // CPU near the net
+
+      // Context weights — strategy matters:
+      // Lob: more likely when CPU is at back (defensive clear), or player just dropped
+      // Drop: more likely when CPU is at front (attacking net), or player just lobbed
+      // Normal: always a solid option, fills the rest
+      let dropW = dcfg.dropP * 1.2 + (atFront ? 0.12 : 0) + (lastType==='lob' ? 0.10 : 0);
+      let lobW  = 0.18 + (atBack  ? 0.12 : 0) + (lastType==='drop' ? 0.10 : 0)
+                       + (lastType==='serve' ? 0 : 0);  // no extra lob after serve
+      let normalW = Math.max(0.40, 1 - dropW - lobW);
+
+      // Normalise
+      const total = dropW + lobW + normalW;
+      dropW /= total; lobW /= total; // normalW is the remainder
+
+      if(rv < dropW){
+        type='drop'; peak=0.14;
+        // Drop depth: near net if at front, short service line if at back
+        tz = atFront ? 0.52 + rn(-0.02,0.02) : 0.55 + rn(-0.03,0.03);
+
+      } else if(rv < dropW + lobW){
+        // Lob: always deep — near player baseline
+        type='lob'; peak=0.54;
+        tz = clamp(0.91 + rn(-0.02, 0.03), 0.88, 0.94);
+
+      } else {
+        // Normal: variety of depths based on difficulty and position
+        type='normal'; peak=0.26;
+        const d = Math.random();
+        if(d < 0.22)      tz = 0.57 + rn(-0.03,0.03);  // short
+        else if(d < 0.50) tz = 0.68 + rn(-0.04,0.04);  // mid
+        else if(d < 0.76) tz = 0.78 + rn(-0.04,0.04);  // deep-mid
+        else              tz = 0.87 + rn(-0.03,0.03);  // deep
       }
     }
 
@@ -1468,7 +1523,6 @@ const Game = {
     C.animF = 0;
     C.facesLeft = aimX < C.wx;
 
-    // Jump for smash
     if(doSmash){
       C.jumpY = 0; C.jumpVY = 0.24; C.isJumping = true;
       setTimeout(()=>{ C.anim='idle'; C.isJumping=false; }, 500);
@@ -1476,7 +1530,7 @@ const Game = {
       setTimeout(()=>{ C.anim='idle'; }, 380);
     }
 
-    this.fireShuttle('c', C.wx, C.wz, aimX, clamp(tz,0.52,0.96), peak, type);
+    this.fireShuttle('c', C.wx, C.wz, aimX, clamp(tz,0.52,0.94), peak, type);
     this.spawnHit(C.wx, C.wz);
     C.willMiss=false; C.decided=false; C.willSmash=false;
   },
@@ -1491,7 +1545,7 @@ const Game = {
     if(!isFinite(dist) || dist < 0.005){ return; }
 
     // Rally speed escalation
-    if(type==='lob' || type==='drop'){
+    if(type==='lob' || type==='drop' || type==='serve'){
       this.rallyHits = 0; this.rallySpeedMult = 1.0;
     } else {
       this.rallyHits = Math.min(this.rallyHits + 1, 10);
@@ -1527,21 +1581,37 @@ const Game = {
     // Non-smash: normal arc with net clearance
     const minTime = 1.0 / this.rallySpeedMult;
     const speedDiv = 0.60 * this.rallySpeedMult;
-    const time = Math.max(minTime, dist/speedDiv);
-    let safePeak = peakH;
-    if(Math.abs(dz) > 0.02){
-      const NET_Z=0.500, NET_H=0.115;
-      const tNet=(NET_Z-fz)/dz;
-      if(tNet>0 && tNet<1){
-        const tAtNet=tNet*time;
-        const minVy=(NET_H+0.04+0.5*g*tAtNet*tAtNet-0.03)/tAtNet;
-        const minPeak=(minVy-0.5*g*time*0.35)*time;
-        safePeak=Math.max(peakH, minPeak);
+    const baseTime = Math.max(minTime, dist/speedDiv);
+
+    let vy0, time;
+    if(type === 'lob'){
+      // Lob: extend travel time so the shuttle hangs in the air longer and arcs higher.
+      // Multiplier 1.7× gives ~70% more hang time vs a normal shot.
+      // The pure parabola formula guarantees it still lands exactly at (tx,tz):
+      //   wy(t) = 0.03 + vy0*t - 0.5*g*t² = 0  →  vy0 = (0.5*g*t² - 0.03) / t
+      // With t 70% longer, vy0 is ~70% larger → peak height ~2× taller visually.
+      time = baseTime * 1.7;
+      vy0 = (0.5*g*time*time - 0.03) / time;
+    } else {
+      time = baseTime;
+      // Non-lob: standard peak formula with net clearance
+      let safePeak = peakH;
+      if(Math.abs(dz) > 0.02){
+        const NET_Z=0.500, NET_H=0.115;
+        const tNet=(NET_Z-fz)/dz;
+        if(tNet>0 && tNet<1){
+          const tAtNet=tNet*time;
+          const minVy=(NET_H+0.04+0.5*g*tAtNet*tAtNet-0.03)/tAtNet;
+          const minPeak=(minVy-0.5*g*time*0.35)*time;
+          safePeak=Math.max(peakH, minPeak);
+        }
       }
+      vy0 = (safePeak/time)+0.5*g*time*0.35;
     }
+
     SH.wx=fx; SH.wz=fz; SH.wy=0.03;
     SH.vx=dx/time; SH.vz=dz/time;
-    SH.vy=(safePeak/time)+0.5*g*time*0.35;
+    SH.vy=vy0;
     SH.state='flying'; SH.owner=owner; SH.shotType=type; SH.trail=[];
   },
 
@@ -1597,6 +1667,8 @@ const Game = {
     this.SH.state='dead'; this.SH.trail=[];
     this.gstate='dead'; this.meter.on=false; this.slowmo=false;
     this.canSmash=false;
+    // Clear CPU chase state so it never carries stale decisions into the next rally
+    if(this.C){ this.C.letLandDecided=null; this.C.willMiss=false; this.C.willSmash=false; }
     this.pts[winner]++;
     this.srv=winner;
     this.updateHUD();
@@ -1675,6 +1747,9 @@ const Game = {
     this.P.vx = 0; this.P.vz = 0;
     this.C.wx = cPos.x; this.C.wz = cPos.z;
     this.C.decided = false; this.C.graceT = 0;
+    this.C.letLandDecided = null;  // MUST reset so CPU chases new rally shuttle
+    this.C.willMiss = false; this.C.willSmash = false;
+    this.C.reactT = 0;
 
     if(this.srv==='p'){
       this.SH.wx = this.P.wx;
