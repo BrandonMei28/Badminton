@@ -332,7 +332,7 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
         <div class="so"    data-g="pts" data-v="11" onclick="Setup.pick(this)"><div class="sol">11 Points</div><div class="sos">Quick Match</div></div>
       </div>
       <div class="sg-g">
-        <div class="sg-l">Game Mode</div>
+        <div class="sg-l">Games to Win</div>
         <div class="so on" data-g="mode" data-v="1" onclick="Setup.pick(this)"><div class="sol">Best of 1</div><div class="sos"></div></div>
         <div class="so"    data-g="mode" data-v="3" onclick="Setup.pick(this)"><div class="sol">Best of 3</div><div class="sos"></div></div>
         <div class="so"    data-g="mode" data-v="5" onclick="Setup.pick(this)"><div class="sol">Best of 5</div><div class="sos"></div></div>
@@ -394,7 +394,7 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
         <div class="so"    data-g="tpts" data-v="11" onclick="Setup.pick(this)"><div class="sol">11 Points</div><div class="sos">Quick Matches</div></div>
       </div>
       <div class="sg-g">
-        <div class="sg-l">Game Mode</div>
+        <div class="sg-l">Games to Win</div>
         <div class="so on" data-g="tmode" data-v="1" onclick="Setup.pick(this)"><div class="sol">Best of 1</div><div class="sos"></div></div>
         <div class="so"    data-g="tmode" data-v="3" onclick="Setup.pick(this)"><div class="sol">Best of 3</div><div class="sos"></div></div>
         <div class="so"    data-g="tmode" data-v="5" onclick="Setup.pick(this)"><div class="sol">Best of 5</div><div class="sos"></div></div>
@@ -411,7 +411,7 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
   <div class="fi" style="max-width:720px;margin:0 auto">
     <div style="display:flex;flex-direction:column;gap:.25rem;margin-bottom:1rem">
       <div class="ft" id="bracket-title">Tournament Bracket</div>
-      <div class="fs" id="bracket-sub">Your next match is highlighted</div>
+      <div class="fs" id="bracket-sub">Your Next Match Is Highlighted</div>
     </div>
     <div id="bracket-draw" style="width:100%;overflow-x:auto;padding-bottom:.5rem"></div>
     <div style="display:flex;justify-content:center;gap:1rem;margin-top:1.2rem">
@@ -425,7 +425,7 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
 <div id="s-tout" class="screen flow hidden">
   <div class="fi" style="text-align:center;align-items:center;gap:1.2rem">
     <div class="ft" style="color:#4b8bc8">Tournament Over</div>
-    <div class="fs" id="tout-msg">You were eliminated.</div>
+    <div class="fs" id="tout-msg">You Were Eliminated.</div>
     <div style="font-size:1rem;color:var(--mid);margin-top:.5rem" id="tout-sub"></div>
     <div style="display:flex;gap:1rem;margin-top:1rem">
       <button class="btn" onclick="Tourn.begin()">Try Again</button>
@@ -439,7 +439,7 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
   <div class="fi" style="text-align:center;align-items:center;gap:1.2rem">
     <div style="font-size:3rem">🏆</div>
     <div class="ft" style="color:#c8a84b">Tournament Champion!</div>
-    <div class="fs" id="twin-msg">You won the tournament!</div>
+    <div class="fs" id="twin-msg">You Won The Tournament!</div>
     <canvas id="confetti-cv" style="position:fixed;inset:0;pointer-events:none;z-index:0" width="800" height="600"></canvas>
     <div style="display:flex;gap:1rem;margin-top:1rem;position:relative;z-index:1">
       <button class="btn" onclick="Tourn.begin()">Play Again</button>
@@ -1894,7 +1894,7 @@ const Game = {
       document.getElementById('win-t').textContent=winner==='p'?'Match Won!':'Match Lost';
       document.getElementById('win-t').style.color=winner==='p'?'#c8a84b':'#4b8bc8';
       const oppName = Tourn._currentOpp?.name || 'CPU';
-      document.getElementById('win-s').textContent=winner==='p'?`You defeated ${oppName}`:`${oppName} wins`;
+      document.getElementById('win-s').textContent=winner==='p'?`You defeated ${oppName}`:`${oppName} Wins`;
       document.getElementById('win-sc').textContent=`${sP} – ${sC} sets`;
       // Replace buttons for tournament flow
       document.getElementById('ov-win').classList.remove('hidden');
@@ -1906,8 +1906,8 @@ const Game = {
     } else {
       document.getElementById('win-t').textContent=winner==='p'?'You Win!':'CPU Wins';
       document.getElementById('win-t').style.color=winner==='p'?'#c8a84b':'#4b8bc8';
-      document.getElementById('win-s').textContent='Match complete';
-      document.getElementById('win-sc').textContent=`${sP} – ${sC} sets`;
+      document.getElementById('win-s').textContent='Match Complete';
+      document.getElementById('win-sc').textContent=`${sP} – ${sC} Games`;
       document.getElementById('ov-win').classList.remove('hidden');
       // Restore default buttons (in case tournament changed them)
       const row=document.querySelector('#ov-win .orow');
@@ -3129,7 +3129,7 @@ const Tourn = (() => {
     const roundNames = ['Quarter Finals','Semi Finals','Final'];
     const nextMatchRound = roundNames[state.round];
     document.getElementById('bracket-title').textContent = 'Tournament Bracket';
-    document.getElementById('bracket-sub').textContent = `Next: ${nextMatchRound}`;
+    document.getElementById('bracket-sub').textContent = `Upcoming: ${nextMatchRound}`;
 
     const hm = humanMatch();
     document.getElementById('bracket-start-btn').textContent =
