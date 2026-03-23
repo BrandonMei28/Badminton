@@ -267,7 +267,7 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
   <div class="m-bg"></div>
   <div class="m-deco"></div>
   <div class="m-inner">
-    <div class="m-eye">Badminton Simulation</div>
+    <div class="m-eye">Badminton Simulator</div>
     <div class="m-title">COURT<span>.</span></div>
     <div class="m-tag">Play. Compete. Dominate.</div>
     <div class="m-acts">
@@ -284,7 +284,7 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
     <div style="display:flex;flex-direction:column;gap:.25rem">
       <button class="fb" onclick="Nav.go('menu')">← Back</button>
       <div class="ft">Create Your Player</div>
-      <div class="fs">Allocate stats freely — each stat 1–5 stars (right-click star for half star)</div>
+      <div class="fs">Right-Click To Add Half A Star</div>
     </div>
     <div class="pc-layout">
       <div style="display:flex;flex-direction:column;gap:1.1rem">
@@ -301,7 +301,7 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
       <div class="sp">
         <div id="stat-rows"></div>
         <div style="display:flex;flex-direction:column;gap:.65rem">
-          <div class="sl" style="font-size:.68rem;letter-spacing:.2em">Quick Templates</div>
+          <div class="sl" style="font-size:.68rem;letter-spacing:.2em">Player Archetypes</div>
           <div class="tmpl-g" id="tmpl-grid"></div>
         </div>
         <button class="btn" style="width:100%;margin-top:.4rem" onclick="Nav.go('setup')">Continue →</button>
@@ -322,20 +322,20 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
       <div class="sg-g">
         <div class="sg-l">Difficulty</div>
         <div class="so de" data-g="diff" data-v="easy"   onclick="Setup.pick(this)"><div class="sol">Easy</div><div class="sos">Relaxed CPU</div></div>
-        <div class="so dn on" data-g="diff" data-v="normal" onclick="Setup.pick(this)"><div class="sol">Normal</div><div class="sos">Balanced challenge</div></div>
+        <div class="so dn on" data-g="diff" data-v="normal" onclick="Setup.pick(this)"><div class="sol">Normal</div><div class="sos">Balanced CPU</div></div>
         <div class="so dh" data-g="diff" data-v="hard"   onclick="Setup.pick(this)"><div class="sol">Hard</div><div class="sos">Aggressive CPU</div></div>
-        <div class="so dx" data-g="diff" data-v="expert" onclick="Setup.pick(this)"><div class="sol">Expert</div><div class="sos">Near-perfect CPU</div></div>
+        <div class="so dx" data-g="diff" data-v="expert" onclick="Setup.pick(this)"><div class="sol">Expert</div><div class="sos">Near-Perfect CPU</div></div>
       </div>
       <div class="sg-g">
         <div class="sg-l">Points to Win</div>
-        <div class="so on" data-g="pts" data-v="21" onclick="Setup.pick(this)"><div class="sol">21 Points</div><div class="sos">BWF standard</div></div>
-        <div class="so"    data-g="pts" data-v="11" onclick="Setup.pick(this)"><div class="sol">11 Points</div><div class="sos">Quick match</div></div>
+        <div class="so on" data-g="pts" data-v="21" onclick="Setup.pick(this)"><div class="sol">21 Points</div><div class="sos">BWF Standard</div></div>
+        <div class="so"    data-g="pts" data-v="11" onclick="Setup.pick(this)"><div class="sol">11 Points</div><div class="sos">Quick Match</div></div>
       </div>
       <div class="sg-g">
         <div class="sg-l">Game Mode</div>
-        <div class="so on" data-g="mode" data-v="1" onclick="Setup.pick(this)"><div class="sol">Best of 1</div><div class="sos">Single game</div></div>
-        <div class="so"    data-g="mode" data-v="3" onclick="Setup.pick(this)"><div class="sol">Best of 3</div><div class="sos">Two games to decide</div></div>
-        <div class="so"    data-g="mode" data-v="5" onclick="Setup.pick(this)"><div class="sol">Best of 5</div><div class="sos">Full championship</div></div>
+        <div class="so on" data-g="mode" data-v="1" onclick="Setup.pick(this)"><div class="sol">Best of 1</div><div class="sos"></div></div>
+        <div class="so"    data-g="mode" data-v="3" onclick="Setup.pick(this)"><div class="sol">Best of 3</div><div class="sos"></div></div>
+        <div class="so"    data-g="mode" data-v="5" onclick="Setup.pick(this)"><div class="sol">Best of 5</div><div class="sos"></div></div>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;margin-top:.8rem">
@@ -350,7 +350,7 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
     <div style="display:flex;flex-direction:column;gap:.25rem">
       <button class="fb" onclick="Nav.go('menu')">← Back</button>
       <div class="ft">Create Your Player</div>
-      <div class="fs">Tournament mode — allocate your stats (1–5 stars each)</div>
+      <div class="fs">Right-Click To Add Half A Star</div>
     </div>
     <div class="pc-layout">
       <div style="display:flex;flex-direction:column;gap:1.1rem">
@@ -378,26 +378,26 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
     <div style="display:flex;flex-direction:column;gap:.25rem">
       <button class="fb" onclick="Nav.go('tplayer')">← Back</button>
       <div class="ft">Tournament Setup</div>
-      <div class="fs">8-player single elimination — Quarter Finals → Semis → Final</div>
+      <div class="fs">8-Player Single Elimination Format</div>
     </div>
     <div class="sg">
       <div class="sg-g">
         <div class="sg-l">CPU Difficulty</div>
-        <div class="so de" data-g="tdiff" data-v="easy"   onclick="Setup.pick(this)"><div class="sol">Easy</div><div class="sos">Relaxed opponents</div></div>
-        <div class="so dn on" data-g="tdiff" data-v="normal" onclick="Setup.pick(this)"><div class="sol">Normal</div><div class="sos">Balanced challenge</div></div>
-        <div class="so dh" data-g="tdiff" data-v="hard"   onclick="Setup.pick(this)"><div class="sol">Hard</div><div class="sos">Tough opponents</div></div>
-        <div class="so dx" data-g="tdiff" data-v="expert" onclick="Setup.pick(this)"><div class="sol">Expert</div><div class="sos">Maximum difficulty</div></div>
+        <div class="so de" data-g="tdiff" data-v="easy"   onclick="Setup.pick(this)"><div class="sol">Easy</div><div class="sos">Relaxed Opponents</div></div>
+        <div class="so dn on" data-g="tdiff" data-v="normal" onclick="Setup.pick(this)"><div class="sol">Normal</div><div class="sos">Balanced Challenge</div></div>
+        <div class="so dh" data-g="tdiff" data-v="hard"   onclick="Setup.pick(this)"><div class="sol">Hard</div><div class="sos">Tough Test</div></div>
+        <div class="so dx" data-g="tdiff" data-v="expert" onclick="Setup.pick(this)"><div class="sol">Expert</div><div class="sos">Maximum Difficulty</div></div>
       </div>
       <div class="sg-g">
-        <div class="sg-l">Points to Win (per match)</div>
-        <div class="so on" data-g="tpts" data-v="21" onclick="Setup.pick(this)"><div class="sol">21 Points</div><div class="sos">BWF standard</div></div>
-        <div class="so"    data-g="tpts" data-v="11" onclick="Setup.pick(this)"><div class="sol">11 Points</div><div class="sos">Quick matches</div></div>
+        <div class="sg-l">Points to Win</div>
+        <div class="so on" data-g="tpts" data-v="21" onclick="Setup.pick(this)"><div class="sol">21 Points</div><div class="sos">BWF Standard</div></div>
+        <div class="so"    data-g="tpts" data-v="11" onclick="Setup.pick(this)"><div class="sol">11 Points</div><div class="sos">Quick Matches</div></div>
       </div>
       <div class="sg-g">
-        <div class="sg-l">Game Mode (per match)</div>
-        <div class="so on" data-g="tmode" data-v="1" onclick="Setup.pick(this)"><div class="sol">Best of 1</div><div class="sos">Single game</div></div>
-        <div class="so"    data-g="tmode" data-v="3" onclick="Setup.pick(this)"><div class="sol">Best of 3</div><div class="sos">Two games to decide</div></div>
-        <div class="so"    data-g="tmode" data-v="5" onclick="Setup.pick(this)"><div class="sol">Best of 5</div><div class="sos">Full championship</div></div>
+        <div class="sg-l">Game Mode</div>
+        <div class="so on" data-g="tmode" data-v="1" onclick="Setup.pick(this)"><div class="sol">Best of 1</div><div class="sos"></div></div>
+        <div class="so"    data-g="tmode" data-v="3" onclick="Setup.pick(this)"><div class="sol">Best of 3</div><div class="sos"></div></div>
+        <div class="so"    data-g="tmode" data-v="5" onclick="Setup.pick(this)"><div class="sol">Best of 5</div><div class="sos"></div></div>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;margin-top:.8rem">
@@ -482,7 +482,7 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
 
   <div id="ctrl-hint">
     <span class="hk"><kbd>WASD</kbd> Move</span>
-    <span class="hk"><kbd>F</kbd> Normal / Serve</span>
+    <span class="hk"><kbd>F</kbd> Drive / Serve</span>
     <span class="hk"><kbd>R</kbd> Lob</span>
     <span class="hk"><kbd>C</kbd> Drop</span>
     <span class="hk"><kbd>T</kbd> Smash</span>
@@ -543,13 +543,11 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
   <div class="ocard" onclick="event.stopPropagation()" style="max-width:460px">
     <div class="ot" style="font-size:1.9rem">Controls</div>
     <div style="display:grid;grid-template-columns:auto 1fr;gap:.5rem 1.8rem;width:100%">
-      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">W A S D</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Move player</div>
-      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">F</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Normal shot — hold &amp; release at green</div>
-      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">R</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Lob — high arc to baseline</div>
-      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">C</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Drop shot — short, near net</div>
-      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">T</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Smash — fast drive</div>
-      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">Space</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Serve</div>
-      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">A / D</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Aim shot left / right while holding shot key</div>
+      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">W A S D</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Move Player / Aim While Holding Shot Key </div>
+      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">F</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Drive Shot — Hold &amp; Release At Green</div>
+      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">R</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Lob Shot — High Arching Shot To Opposing Baseline</div>
+      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">C</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Drop Shot — Finesse Shot Landing Close To The Net</div>
+      <div><kbd style="background:rgba(255,255,255,.1);padding:2px 7px;border-radius:3px;font-size:.78rem">T</kbd></div><div style="color:var(--mid);font-size:.85rem;align-self:center">Smash — Near Unstoppable</div>
     </div>
     <button class="btn btn-o btn-sm" onclick="document.getElementById('ov-ctrl').classList.add('hidden')">Close</button>
   </div>
@@ -649,7 +647,7 @@ const PC = {
     document.getElementById('tmpl-grid').innerHTML =
       shuffled.map((t,i)=>{
         const s=t.s;
-        const desc=`${s.speed}SPD ${s.forehand}FH ${s.backhand}BH ${s.smash}SM`;
+        const desc=`${s.speed} SPD ${s.forehand} FH ${s.backhand} BH ${s.smash} SM`;
         return `<div class="tc" onclick="PC.applyTObj(${JSON.stringify(s).replace(/"/g,'&quot;')})">
           <div class="tn">${t.name}</div><div class="td">${desc}</div>
         </div>`;
