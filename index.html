@@ -271,7 +271,8 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
     <div class="m-title">COURT<span>.</span></div>
     <div class="m-tag">Play. Compete. Dominate.</div>
     <div class="m-acts">
-      <button class="btn" onclick="Nav.go('player')">Play Now</button>
+      <button class="btn" onclick="Nav.go('player')">Exhibition</button>
+      <button class="btn" onclick="Tourn.begin()">Tournament</button>
       <button class="btn btn-o" onclick="UI.showCtrl()">Controls</button>
     </div>
   </div>
@@ -343,7 +344,109 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
   </div>
 </div>
 
-<!-- ═══ GAME ═══ -->
+<!-- ═══ TOURNAMENT PLAYER CREATE ═══ -->
+<div id="s-tplayer" class="screen flow hidden">
+  <div class="fi">
+    <div style="display:flex;flex-direction:column;gap:.25rem">
+      <button class="fb" onclick="Nav.go('menu')">← Back</button>
+      <div class="ft">Create Your Player</div>
+      <div class="fs">Tournament mode — allocate your stats (1–5 stars each)</div>
+    </div>
+    <div class="pc-layout">
+      <div style="display:flex;flex-direction:column;gap:1.1rem">
+        <div class="av-stage"><canvas id="tav" width="200" height="256"></canvas></div>
+        <div class="swatch-row">
+          <span class="sl">Skin</span>
+          <div id="tskin-row" style="display:flex;gap:.5rem"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.3rem">
+          <span class="sl" style="font-size:.68rem">Kit</span>
+          <div id="tkit-row" style="display:flex;gap:.45rem;flex-wrap:wrap"></div>
+        </div>
+      </div>
+      <div class="sp">
+        <div id="tstat-rows"></div>
+        <button class="btn" style="width:100%;margin-top:.4rem" onclick="Nav.go('tsetup')">Continue →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOURNAMENT SETUP ═══ -->
+<div id="s-tsetup" class="screen flow hidden">
+  <div class="fi">
+    <div style="display:flex;flex-direction:column;gap:.25rem">
+      <button class="fb" onclick="Nav.go('tplayer')">← Back</button>
+      <div class="ft">Tournament Setup</div>
+      <div class="fs">8-player single elimination — Quarter Finals → Semis → Final</div>
+    </div>
+    <div class="sg">
+      <div class="sg-g">
+        <div class="sg-l">CPU Difficulty</div>
+        <div class="so de" data-g="tdiff" data-v="easy"   onclick="Setup.pick(this)"><div class="sol">Easy</div><div class="sos">Relaxed opponents</div></div>
+        <div class="so dn on" data-g="tdiff" data-v="normal" onclick="Setup.pick(this)"><div class="sol">Normal</div><div class="sos">Balanced challenge</div></div>
+        <div class="so dh" data-g="tdiff" data-v="hard"   onclick="Setup.pick(this)"><div class="sol">Hard</div><div class="sos">Tough opponents</div></div>
+        <div class="so dx" data-g="tdiff" data-v="expert" onclick="Setup.pick(this)"><div class="sol">Expert</div><div class="sos">Maximum difficulty</div></div>
+      </div>
+      <div class="sg-g">
+        <div class="sg-l">Points to Win (per match)</div>
+        <div class="so on" data-g="tpts" data-v="21" onclick="Setup.pick(this)"><div class="sol">21 Points</div><div class="sos">BWF standard</div></div>
+        <div class="so"    data-g="tpts" data-v="11" onclick="Setup.pick(this)"><div class="sol">11 Points</div><div class="sos">Quick matches</div></div>
+      </div>
+      <div class="sg-g">
+        <div class="sg-l">Game Mode (per match)</div>
+        <div class="so on" data-g="tmode" data-v="1" onclick="Setup.pick(this)"><div class="sol">Best of 1</div><div class="sos">Single game</div></div>
+        <div class="so"    data-g="tmode" data-v="3" onclick="Setup.pick(this)"><div class="sol">Best of 3</div><div class="sos">Two games to decide</div></div>
+        <div class="so"    data-g="tmode" data-v="5" onclick="Setup.pick(this)"><div class="sol">Best of 5</div><div class="sos">Full championship</div></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:.8rem">
+      <button class="btn" onclick="Tourn.startTournament()">Start Tournament →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BRACKET SCREEN ═══ -->
+<div id="s-bracket" class="screen flow hidden">
+  <div class="fi" style="max-width:720px;margin:0 auto">
+    <div style="display:flex;flex-direction:column;gap:.25rem;margin-bottom:1rem">
+      <div class="ft" id="bracket-title">Tournament Bracket</div>
+      <div class="fs" id="bracket-sub">Your next match is highlighted</div>
+    </div>
+    <div id="bracket-draw" style="width:100%;overflow-x:auto;padding-bottom:.5rem"></div>
+    <div style="display:flex;justify-content:center;gap:1rem;margin-top:1.2rem">
+      <button class="btn" id="bracket-start-btn" onclick="Tourn.startNextMatch()">Start Match →</button>
+      <button class="btn btn-o btn-sm" onclick="Game.reset();Nav.go('menu')">Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOURNAMENT OVER ═══ -->
+<div id="s-tout" class="screen flow hidden">
+  <div class="fi" style="text-align:center;align-items:center;gap:1.2rem">
+    <div class="ft" style="color:#4b8bc8">Tournament Over</div>
+    <div class="fs" id="tout-msg">You were eliminated.</div>
+    <div style="font-size:1rem;color:var(--mid);margin-top:.5rem" id="tout-sub"></div>
+    <div style="display:flex;gap:1rem;margin-top:1rem">
+      <button class="btn" onclick="Tourn.begin()">Try Again</button>
+      <button class="btn btn-o btn-sm" onclick="Game.reset();Nav.go('menu')">Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOURNAMENT VICTORY ═══ -->
+<div id="s-twin" class="screen flow hidden">
+  <div class="fi" style="text-align:center;align-items:center;gap:1.2rem">
+    <div style="font-size:3rem">🏆</div>
+    <div class="ft" style="color:#c8a84b">Tournament Champion!</div>
+    <div class="fs" id="twin-msg">You won the tournament!</div>
+    <canvas id="confetti-cv" style="position:fixed;inset:0;pointer-events:none;z-index:0" width="800" height="600"></canvas>
+    <div style="display:flex;gap:1rem;margin-top:1rem;position:relative;z-index:1">
+      <button class="btn" onclick="Tourn.begin()">Play Again</button>
+      <button class="btn btn-o btn-sm" onclick="Game.reset();Nav.go('menu')">Menu</button>
+    </div>
+  </div>
+</div>
 <div id="s-game" class="screen hidden">
   <canvas id="gc"></canvas>
 
@@ -463,8 +566,9 @@ const Nav = {
   go(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
     document.getElementById('s-' + id).classList.remove('hidden');
-    if (id === 'player') PC.init();
-    if (id === 'menu')   { Game.cleanup(); }
+    if (id === 'player')  PC.init();
+    if (id === 'tplayer') TPC.init();
+    if (id === 'menu')    { Game.cleanup(); }
   }
 };
 const UI = { showCtrl(){ document.getElementById('ov-ctrl').classList.remove('hidden'); } };
@@ -472,13 +576,16 @@ const UI = { showCtrl(){ document.getElementById('ov-ctrl').classList.remove('hi
 // ── SETUP ─────────────────────────────────────────────────────
 const Setup = {
   diff:'normal', pts:21, mode:1,
+  tdiff:'normal', tmode:1,
   pick(el) {
     const g=el.dataset.g, v=el.dataset.v;
     document.querySelectorAll(`[data-g="${g}"]`).forEach(e=>e.classList.remove('on'));
     el.classList.add('on');
-    if(g==='diff') this.diff=v;
-    if(g==='pts')  this.pts=+v;
-    if(g==='mode') this.mode=+v;
+    if(g==='diff')  this.diff=v;
+    if(g==='pts'||g==='tpts')  this.pts=+v;
+    if(g==='mode')  this.mode=+v;
+    if(g==='tdiff') this.tdiff=v;
+    if(g==='tmode') this.tmode=+v;
   }
 };
 
@@ -536,15 +643,20 @@ const PC = {
     this.renderStats(); this.drawAv();
   },
   renderTmpls() {
+    // Pick 4 random CPU characters from the tournament roster each time
+    const roster = typeof Tourn !== 'undefined' ? Tourn.CPU_ROSTER : [];
+    const shuffled = [...roster].sort(()=>Math.random()-0.5).slice(0,4);
     document.getElementById('tmpl-grid').innerHTML =
-      this.tmpls.map((t,i)=>`<div class="tc" onclick="PC.applyT(${i})">
-        <div class="tn">${t.name}</div><div class="td">${t.desc}</div>
-      </div>`).join('');
+      shuffled.map((t,i)=>{
+        const s=t.s;
+        const desc=`${s.speed}SPD ${s.forehand}FH ${s.backhand}BH ${s.smash}SM`;
+        return `<div class="tc" onclick="PC.applyTObj(${JSON.stringify(s).replace(/"/g,'&quot;')})">
+          <div class="tn">${t.name}</div><div class="td">${desc}</div>
+        </div>`;
+      }).join('');
   },
-  applyT(i){
-    const t=this.tmpls[i];
-    this.stats={...t.s};
-    document.querySelectorAll('.tc').forEach((c,j)=>c.classList.toggle('on',j===i));
+  applyTObj(s){
+    this.stats={...s};
     this.renderStats(); this.drawAv();
   },
   drawAv(){
@@ -733,11 +845,17 @@ const Game = {
     this.cleanup();
   },
 
-  start(){
+  start(isTournament=false){
     this.reset(); // always clean slate
+    this.isTournament = isTournament;
     this.canvas = document.getElementById('gc');
     this.ctx    = this.canvas.getContext('2d');
     this.cfg    = { diff:Setup.diff, pts:Setup.pts, mode:Setup.mode, player:PC.cfg() };
+    // Tournament: override CPU with the matched opponent's stats/skin/kit
+    if(isTournament && Tourn._currentOpp){
+      const opp = Tourn._currentOpp;
+      this.cfg.tournOpp = opp;
+    }
     Nav.go('game');
     this.resize();
     this.initMatch();
@@ -815,6 +933,17 @@ const Game = {
       jumpY:0, jumpVY:0, isJumping:false, jumpFalling:false, willSmash:false,
       letLandDecided:null,
     };
+    // Tournament: use opponent's skin/kit/special flags
+    if(this.cfg.tournOpp){
+      const opp = this.cfg.tournOpp;
+      this.C.tournSkin = opp.skin;
+      this.C.tournKit  = opp.kit;
+      this.C.small     = !!opp.small;     // Child Prodigy
+      this.C.lefty     = !!opp.lefty;     // Lefty Lucy
+      this.C.feminine  = !!opp.feminine;  // Lefty Lucy
+      // Override dcfg speed with opponent's stat
+      if(opp.s) this.C.speed = dcfg.speed * (0.7 + opp.s.speed * 0.08);
+    }
     // Shuttle
     this.SH = {
       wx:0, wz:0.80, wy:0,
@@ -1319,12 +1448,17 @@ const Game = {
     } else if(shuttleComingToCPU){
       // If already decided this shot is going out, hold still — no target updates
       if(C.letLandDecided === true){
-        C.tgtX = C.wx; C.tgtZ = C.wz; // stay put, watch it land
+        C.tgtX = C.wx; C.tgtZ = C.wz;
       } else {
-        C.reactT -= dt;
+        const isServe = SH.shotType === 'serve';
+        // Serve: react immediately (no delay), never deliberately miss
+        if(isServe) C.reactT = 0;
+        else C.reactT -= dt;
+
         if(C.reactT <= 0){
           const err = dcfg.errX;
-          if(Math.random() < dcfg.missP){
+          const shouldMiss = !isServe && Math.random() < dcfg.missP;
+          if(shouldMiss){
             C.tgtX = rn(-0.35, 0.35);
             C.tgtZ = 0.20 + rn(-0.08, 0.08);
             C.willMiss = true;
@@ -1367,7 +1501,9 @@ const Game = {
     const tdz = C.tgtZ - C.wz;
     const dist = Math.sqrt(tdx*tdx + tdz*tdz);
     if(dist > 0.003){
-      const mv = Math.min(dcfg.speed * dt, dist);
+      // Move faster when chasing a smash (urgent sprint)
+      const moveSpeedMult = SH.shotType==='smash' ? 1.35 : 1.0;
+      const mv = Math.min(dcfg.speed * moveSpeedMult * dt, dist);
       C.wx += (tdx/dist) * mv;
       C.wz += (tdz/dist) * mv;
     }
@@ -1388,8 +1524,9 @@ const Game = {
 
     // Hit shuttle when in reach
     if(shuttleComingToCPU && C.hitCD <= 0 && !C.willMiss){
-      const reach = SH.shotType==='smash' ? 0.10 : 0.18;
-      const maxHeight = SH.shotType==='smash' ? 0.30 : 0.65;
+      // Smashes travel fast — CPU needs wider reach to intercept realistically
+      const reach = SH.shotType==='smash' ? 0.22 : 0.22;
+      const maxHeight = SH.shotType==='smash' ? 0.55 : 0.65;
       const sd = Math.sqrt((SH.wx-C.wx)**2 + (SH.wz-C.wz)**2);
       if(sd < reach && SH.wy < maxHeight){
 
@@ -1744,14 +1881,42 @@ const Game = {
   },
 
   endMatch(winner){
-    this.gstate='dead';
+    this.gstate='matchEnd';
     const sP=this.sets.filter(s=>s.w==='p').length;
     const sC=this.sets.filter(s=>s.w==='c').length;
-    document.getElementById('win-t').textContent=winner==='p'?'You Win!':'CPU Wins';
-    document.getElementById('win-t').style.color=winner==='p'?'#c8a84b':'#4b8bc8';
-    document.getElementById('win-s').textContent='Match complete';
-    document.getElementById('win-sc').textContent=`${sP} – ${sC} sets`;
-    document.getElementById('ov-win').classList.remove('hidden');
+
+    // Player celebration bounce when they win
+    if(winner==='p'){
+      this.P.celebrating = true;
+      this.P.celebT = 0;
+    }
+
+    if(this.isTournament){
+      // Show result briefly then hand off to tournament bracket
+      document.getElementById('win-t').textContent=winner==='p'?'Match Won!':'Match Lost';
+      document.getElementById('win-t').style.color=winner==='p'?'#c8a84b':'#4b8bc8';
+      const oppName = Tourn._currentOpp?.name || 'CPU';
+      document.getElementById('win-s').textContent=winner==='p'?`You defeated ${oppName}`:`${oppName} wins`;
+      document.getElementById('win-sc').textContent=`${sP} – ${sC} sets`;
+      // Replace buttons for tournament flow
+      document.getElementById('ov-win').classList.remove('hidden');
+      const row=document.querySelector('#ov-win .orow');
+      row.innerHTML=`<button class="btn" onclick="Game.reset();Tourn.onMatchEnd(${winner==='p'?'true':'false'})">
+        ${winner==='p'?'Next Round →':'See Results'}
+      </button>
+      <button class="btn btn-o btn-sm" onclick="Game.reset();Nav.go('menu')">Menu</button>`;
+    } else {
+      document.getElementById('win-t').textContent=winner==='p'?'You Win!':'CPU Wins';
+      document.getElementById('win-t').style.color=winner==='p'?'#c8a84b':'#4b8bc8';
+      document.getElementById('win-s').textContent='Match complete';
+      document.getElementById('win-sc').textContent=`${sP} – ${sC} sets`;
+      document.getElementById('ov-win').classList.remove('hidden');
+      // Restore default buttons (in case tournament changed them)
+      const row=document.querySelector('#ov-win .orow');
+      row.innerHTML=`<button class="btn" onclick="Game.restart()">Play Again</button>
+        <button class="btn btn-o btn-sm" onclick="Game.reset();Nav.go('setup')">Change Setup</button>
+        <button class="btn btn-o btn-sm" onclick="Game.reset();Nav.go('menu')">Menu</button>`;
+    }
   },
 
   nextRally(){
@@ -1809,25 +1974,29 @@ const Game = {
       hsets.appendChild(d);
     }
 
-    // ── Match point / deuce indicator ──
+    // ── Match point / deuce indicator — flash briefly then disappear ──
     const mp=document.getElementById('match-point-banner');
     if(!mp) return;
     const atDeuce = wp >= wn-1 && wc >= wn-1;
+    let mpText='', mpColor='';
     if(atDeuce){
-      if(wp === wc){
-        mp.textContent='DEUCE'; mp.style.color='#f0ede8'; mp.classList.add('vis');
-      } else {
-        const leader = wp>wc ? 'p' : 'c';
-        mp.textContent = leader==='p' ? 'ADVANTAGE YOU' : 'ADVANTAGE CPU';
-        mp.style.color = leader==='p' ? '#c8a84b' : '#4b8bc8';
-        mp.classList.add('vis');
+      if(wp===wc){ mpText='DEUCE'; mpColor='#f0ede8'; }
+      else {
+        const leader=wp>wc?'p':'c';
+        mpText=leader==='p'?'ADVANTAGE YOU':'ADVANTAGE CPU';
+        mpColor=leader==='p'?'#c8a84b':'#4b8bc8';
       }
-    } else if((wp===wn-1 && wc<wn-1) || (wc===wn-1 && wp<wn-1)){
-      // One player is at match point
-      const mpSide = wp===wn-1 ? 'p' : 'c';
-      mp.textContent = mpSide==='p' ? 'MATCH POINT' : 'CPU MATCH POINT';
-      mp.style.color  = mpSide==='p' ? '#c8a84b' : '#ff6060';
+    } else if((wp===wn-1&&wc<wn-1)||(wc===wn-1&&wp<wn-1)){
+      const mpSide=wp===wn-1?'p':'c';
+      mpText=mpSide==='p'?'MATCH POINT':'CPU MATCH POINT';
+      mpColor=mpSide==='p'?'#c8a84b':'#ff6060';
+    }
+    if(mpText){
+      mp.textContent=mpText; mp.style.color=mpColor;
       mp.classList.add('vis');
+      // Auto-hide after 1.8s so it clears before serve banner appears
+      clearTimeout(this._mpTimer);
+      this._mpTimer=setTimeout(()=>mp.classList.remove('vis'), 1100);
     } else {
       mp.classList.remove('vis');
     }
@@ -2400,14 +2569,28 @@ const Game = {
 
   drawFigure3D(ctx,who){
     const ent=who==='p'?this.P:this.C;
-    const jumpOff = ent.jumpY || 0;
+    const cfg=this.cfg.player;
+
+    // Celebration bounce: player jumps up and down repeatedly after winning
+    let celebOff = 0;
+    if(ent.celebrating){
+      ent.celebT = (ent.celebT||0) + 0.016;
+      celebOff = Math.max(0, Math.sin(ent.celebT * 8) * 0.12);
+      if(ent.celebT > 4) ent.celebrating = false;
+    }
+
+    const jumpOff = (ent.jumpY || 0) + celebOff;
     const pt=this.w2s(ent.wx, ent.wz, jumpOff);
     if(!isFinite(pt.x)||!isFinite(pt.y)) return;
-    const scRaw = pt.sc * 0.88;
-    const sc = Math.max(0.05, scRaw); // same formula for both player and CPU
-    const cfg=this.cfg.player;
-    const skin=who==='p'?cfg.skin:'#c8855a';
-    const kit =who==='p'?cfg.kit :'#1e2060';
+
+    // Child Prodigy is slightly smaller
+    const sizeScale = (who==='c' && ent.small) ? 0.82 : 1.0;
+    const scRaw = pt.sc * 0.88 * sizeScale;
+    const sc = Math.max(0.05, scRaw);
+
+    // Skin/kit: tournament uses opponent's colours, exhibition uses defaults
+    const skin = who==='p' ? cfg.skin : (ent.tournSkin || '#c8855a');
+    const kit  = who==='p' ? cfg.kit  : (ent.tournKit  || '#1e2060');
 
     // Always draw ground shadow — dramatically smaller when jumping
     const gnd=this.w2s(ent.wx, ent.wz, 0);
@@ -2427,7 +2610,9 @@ const Game = {
 
     // jumpScale always positive
     const jumpScale = Math.max(0.05, jumpOff > 0.05 ? sc * (1 + jumpOff * 0.18) : sc);
-    drawFigure(ctx, pt.x, pt.y, jumpScale, skin, kit, ent.anim, ent.animF, who==='c', ent.facesLeft, false);
+    // Lefty Lucy: pass facesLeft flipped so racket arm is on left
+    const facesLeft = who==='c' && ent.lefty ? !ent.facesLeft : ent.facesLeft;
+    drawFigure(ctx, pt.x, pt.y, jumpScale, skin, kit, ent.anim, ent.animF, who==='c', facesLeft, false);
 
     // Orange smash burst — radii always positive
     if(ent.anim==='smash' && ent.animF >= 2 && jumpOff > 0.04){
@@ -2681,6 +2866,416 @@ const MobileControls = (() => {
   }
 
   return { init, onServe, isActive:()=>active };
+})();
+
+// ── TOURNAMENT ──────────────────────────────────────────────────
+const Tourn = (() => {
+
+  // All possible CPU characters
+  const CPU_ROSTER = [
+    { name:'Defensive Master',   s:{speed:5,forehand:4,backhand:4,smash:3}, tier:3 },
+    { name:'The Dad',            s:{speed:3,forehand:4,backhand:4,smash:5}, tier:3 },
+    { name:'Creative Maestro',   s:{speed:3,forehand:5,backhand:5,smash:3}, tier:3 },
+    { name:'All Rounder',        s:{speed:4,forehand:4,backhand:4,smash:4}, tier:3 },
+    { name:'The Coach',          s:{speed:4,forehand:5,backhand:4,smash:4}, tier:4 },
+    { name:'Science Teacher',    s:{speed:3,forehand:3,backhand:3,smash:3}, tier:2 },
+    { name:'Pickleball Enthusiast',s:{speed:4,forehand:3,backhand:3,smash:2},tier:2},
+    { name:'Smashing Machine',   s:{speed:3,forehand:3,backhand:2,smash:5}, tier:3 },
+    { name:'Tennis Dropout',     s:{speed:5,forehand:5,backhand:3,smash:4}, tier:4 },
+    { name:'Weekend Warrior',    s:{speed:2,forehand:3,backhand:2,smash:3}, tier:1 },
+    { name:'Child Prodigy',      s:{speed:5,forehand:4,backhand:4,smash:3}, tier:3, small:true },
+    { name:'The Gearhead',       s:{speed:3,forehand:4,backhand:4,smash:4}, tier:3 },
+    { name:'Lefty Lucy',         s:{speed:4,forehand:4,backhand:5,smash:3}, tier:3, lefty:true, feminine:true },
+    { name:'Retired Pro',        s:{speed:3,forehand:5,backhand:5,smash:5}, tier:4 },
+    { name:'The Amateur',        s:{speed:2,forehand:2,backhand:2,smash:2}, tier:1 },
+  ];
+
+  const SKINS = ['#f5c8a0','#d4956a','#c07840','#8b5c2e','#5c3318','#e8b090','#a06030'];
+  const KITS  = ['#1e4fa0','#b02a22','#217a3c','#6e2a9a','#1a1a1a','#c85c10','#126e5a','#b09030','#cc4488','#226688'];
+
+  let state = {
+    players: [],   // 8 slots: index 0 = human player
+    bracket: [],   // [{p1,p2,winner}] 4 QF + 2 SF + 1 Final = 7 matches
+    round: 0,      // 0=QF, 1=SF, 2=Final
+    matchIdx: 0,   // current match in round
+    humanSlot: 0,  // which bracket slot is the human
+    tPts: 21,
+  };
+
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.random()*i|0;[a[i],a[j]]=[a[j],a[i]];} return a; }
+  function rndFrom(arr){ return arr[Math.random()*arr.length|0]; }
+
+  function makeCPU(template){
+    const skin = rndFrom(SKINS);
+    const kit  = rndFrom(KITS);
+    return { ...template, skin, kit, isHuman:false };
+  }
+
+  function begin(){
+    // Init tournament player create screen
+    TPC.init();
+    Nav.go('tplayer');
+  }
+
+  function startTournament(){
+    state.tPts  = Setup.pts;
+    state.tDiff = Setup.tdiff;
+    state.tMode = Setup.tmode;
+
+    // Pick 7 unique CPU opponents from roster
+    const pool = shuffle([...CPU_ROSTER]).slice(0, 7).map(makeCPU);
+    const human = {
+      name: 'You',
+      s: {...PC.stats},
+      skin: PC.skins[PC.skinI],
+      kit: PC.kits[PC.kitI],
+      isHuman: true,
+    };
+
+    // 8 seeds — human at random slot
+    const humanSlot = Math.random()*8|0;
+    state.humanSlot = humanSlot;
+    state.players = [];
+    let cpuI = 0;
+    for(let i=0;i<8;i++){
+      state.players.push(i===humanSlot ? human : pool[cpuI++]);
+    }
+
+    // Build initial bracket: 4 QF matches
+    state.bracket = [];
+    for(let i=0;i<4;i++){
+      state.bracket.push({ p1: i*2, p2: i*2+1, winner: null, round: 0 });
+    }
+    // 2 SF + 1 Final placeholders
+    for(let i=0;i<2;i++) state.bracket.push({ p1:null, p2:null, winner:null, round:1 });
+    state.bracket.push({ p1:null, p2:null, winner:null, round:2 });
+
+    state.round = 0;
+    state.matchIdx = 0;
+    state.humanEliminated = false;
+
+    // Simulate CPU-only QF matches immediately (not involving human)
+    simCPUMatches();
+    showBracket();
+  }
+
+  // Find which match the human plays in current round
+  function humanMatch(){
+    const roundMatches = state.bracket.filter(m=>m.round===state.round);
+    return roundMatches.find(m=>
+      state.players[m.p1]?.isHuman || state.players[m.p2]?.isHuman
+    );
+  }
+
+  // Simulate a CPU vs CPU match result weighted by tier
+  function simMatch(m){
+    const p1 = state.players[m.p1];
+    const p2 = state.players[m.p2];
+    if(!p1||!p2) return;
+    const t1 = p1.tier||3, t2 = p2.tier||3;
+    const prob = (t1 + Math.random()*2) / (t1+t2+Math.random()*2);
+    m.winner = prob > 0.5 ? m.p1 : m.p2;
+  }
+
+  function isHumanMatch(m){
+    // Check if either slot in this match belongs to the human player
+    return (m.p1 !== null && state.players[m.p1]?.isHuman) ||
+           (m.p2 !== null && state.players[m.p2]?.isHuman);
+  }
+
+  function simCPUMatches(){
+    const roundMatches = state.bracket.filter(m=>m.round===state.round);
+    for(const m of roundMatches){
+      if(m.winner !== null) continue;          // already settled
+      if(isHumanMatch(m)) continue;            // NEVER sim the human's match
+      if(m.p1===null || m.p2===null) continue; // slots not filled yet
+      simMatch(m);
+    }
+  }
+
+  // After human match resolves, advance bracket
+  function advanceBracket(humanWon){
+    const hm = humanMatch();
+    if(!hm) return;
+
+    // Find which slot is the human — could be p1 or p2
+    const humanIsP1 = state.players[hm.p1]?.isHuman;
+    const humanSlotInMatch = humanIsP1 ? hm.p1 : hm.p2;
+    const cpuSlotInMatch   = humanIsP1 ? hm.p2 : hm.p1;
+
+    hm.winner = humanWon ? humanSlotInMatch : cpuSlotInMatch;
+
+    if(!humanWon) state.humanEliminated = true;
+
+    if(state.round === 2){
+      if(humanWon){ Nav.go('twin'); startConfetti(); }
+      else { showFinalResults(); }
+      return;
+    }
+
+    // Propagate winners into next round slots
+    const nextRound   = state.round + 1;
+    const curMatches  = state.bracket.filter(m=>m.round===state.round);
+    const nextMatches = state.bracket.filter(m=>m.round===nextRound);
+    for(let i=0;i<nextMatches.length;i++){
+      nextMatches[i].p1 = curMatches[i*2]?.winner ?? null;
+      nextMatches[i].p2 = curMatches[i*2+1]?.winner ?? null;
+    }
+
+    state.round = nextRound;
+    simCPUMatches(); // sim CPU-only matches in new round
+
+    if(state.humanEliminated){
+      simAllRemaining();
+      showFinalResults();
+    } else {
+      showBracket();
+    }
+  }
+
+  function simAllRemaining(){
+    // Simulate all unsettled matches — skip human's if still in tournament
+    for(const m of state.bracket){
+      if(m.winner!==null) continue;
+      if(m.p1===null || m.p2===null) continue;
+      if(!state.humanEliminated && isHumanMatch(m)) continue;
+      simMatch(m);
+    }
+    // Propagate winners through remaining rounds
+    for(let r=0;r<2;r++){
+      const cur  = state.bracket.filter(m=>m.round===r);
+      const next = state.bracket.filter(m=>m.round===r+1);
+      for(let i=0;i<next.length;i++){
+        if(next[i].p1===null && cur[i*2]) next[i].p1=cur[i*2].winner;
+        if(next[i].p2===null && cur[i*2+1]) next[i].p2=cur[i*2+1].winner;
+        if(next[i].winner===null && next[i].p1!==null && next[i].p2!==null){
+          if(!state.humanEliminated && isHumanMatch(next[i])) continue;
+          simMatch(next[i]);
+        }
+      }
+    }
+  }
+
+  function showFinalResults(){
+    // Sim all remaining matches so bracket is complete
+    simAllRemaining();
+    const finalMatch = state.bracket.find(m=>m.round===2);
+    const champion = finalMatch ? state.players[finalMatch.winner] : null;
+    const champName = champion?.isHuman ? 'You' : (champion?.name||'Unknown');
+
+    document.getElementById('tout-msg').textContent =
+      state.humanEliminated ? `You were eliminated. The tournament continued without you.`
+                            : 'You were defeated in the Final.';
+    document.getElementById('tout-sub').textContent = `Tournament Champion: ${champName}`;
+
+    // Update tout screen with full bracket + retry/menu
+    const sub = document.getElementById('tout-sub');
+    sub.innerHTML = `<strong style="color:var(--accent)">🏆 Champion: ${champName}</strong>`;
+
+    // Inject full bracket into tout screen
+    let bd = document.getElementById('tout-bracket');
+    if(!bd){
+      bd = document.createElement('div');
+      bd.id='tout-bracket';
+      bd.style.cssText='width:100%;overflow-x:auto;margin-top:1rem;';
+      document.querySelector('#s-tout .fi').insertBefore(bd, document.querySelector('#s-tout .fi').children[3]);
+    }
+    bd.innerHTML = renderBracketHTML(true);
+
+    // Update buttons
+    const btnRow = document.querySelector('#s-tout .fi > div:last-child') ||
+                   document.createElement('div');
+    btnRow.style.cssText='display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap;justify-content:center;';
+    btnRow.innerHTML=`<button class="btn" onclick="Tourn.begin()">Retry Tournament</button>
+      <button class="btn btn-o btn-sm" onclick="Game.reset();Nav.go('menu')">Menu</button>`;
+
+    Nav.go('tout');
+  }
+
+  function startNextMatch(){
+    const hm = humanMatch();
+    if(!hm) return;
+    const opp = state.players[hm.p1]?.isHuman ? state.players[hm.p2] : state.players[hm.p1];
+    if(!opp) return;
+
+    // Configure game with tournament settings
+    // Scale difficulty based on opponent tier AND tournament base difficulty
+    const baseDiff = state.tDiff || 'normal';
+    Setup.diff = scaleDiff(baseDiff, opp.tier||3);
+    Setup.pts  = state.tPts;
+    Setup.mode = state.tMode || 1;
+
+    // Override CPU appearance/stats for this match
+    Tourn._currentOpp = opp;
+    Game.reset();
+    Game.start(true); // true = tournament mode
+  }
+
+  function scaleDiff(base, tier){
+    // Map base difficulty to numeric level, offset by tier
+    const levels = ['easy','normal','hard','expert'];
+    const baseIdx = levels.indexOf(base);
+    // Tier 1=very easy (-1), tier 2=easy (0), tier 3=base, tier 4=harder (+1)
+    const offset = tier <= 1 ? -1 : tier === 2 ? 0 : tier === 3 ? 0 : 1;
+    return levels[Math.max(0, Math.min(3, baseIdx + offset))];
+  }
+
+  // Called by Game.endMatch when in tournament mode
+  // winner is passed as boolean true/false from the button onclick
+  function onMatchEnd(humanWon){
+    advanceBracket(!!humanWon);
+  }
+
+  // ── Bracket rendering ──
+  function showBracket(){
+    const roundNames = ['Quarter Finals','Semi Finals','Final'];
+    const nextMatchRound = roundNames[state.round];
+    document.getElementById('bracket-title').textContent = 'Tournament Bracket';
+    document.getElementById('bracket-sub').textContent = `Next: ${nextMatchRound}`;
+
+    const hm = humanMatch();
+    document.getElementById('bracket-start-btn').textContent =
+      state.round===2 ? 'Start Final →' :
+      state.round===1 ? 'Start Semi-Final →' : 'Start Quarter-Final →';
+
+    document.getElementById('bracket-draw').innerHTML = renderBracketHTML();
+    Nav.go('bracket');
+  }
+
+  function pName(slot){
+    if(slot===null||slot===undefined) return 'TBD';
+    const p = state.players[slot];
+    if(!p) return 'TBD';
+    return p.isHuman ? '★ You' : p.name;
+  }
+  function pIsHuman(slot){ return slot!==null && state.players[slot]?.isHuman; }
+  function wName(m){ return m.winner!==null ? pName(m.winner) : ''; }
+
+  function renderBracketHTML(showAll=false){
+    const qf = state.bracket.filter(m=>m.round===0);
+    const sf = state.bracket.filter(m=>m.round===1);
+    const fi = state.bracket.filter(m=>m.round===2);
+    const hm = humanMatch();
+
+    const matchBox = (m, label) => {
+      const isNext = m===hm && m.winner===null;
+      const p1h = pIsHuman(m.p1), p2h = pIsHuman(m.p2);
+      const w = m.winner;
+      return `<div class="bm${isNext?' bm-next':''}${w!==null?' bm-done':''}">
+        <div class="bm-label">${label}</div>
+        <div class="bp${w===m.p1?' bw':''}${p1h?' bp-you':''}">${pName(m.p1)}</div>
+        <div class="bp${w===m.p2?' bw':''}${p2h?' bp-you':''}">${pName(m.p2)}</div>
+        ${w!==null?`<div class="bm-winner">→ ${wName(m)}</div>`:''}
+      </div>`;
+    };
+
+    return `<div class="bracket-wrap">
+      <div class="b-col">
+        <div class="b-round-lbl">Quarter Finals</div>
+        ${qf.map((m,i)=>matchBox(m,'QF'+(i+1))).join('')}
+      </div>
+      <div class="b-col">
+        <div class="b-round-lbl">Semi Finals</div>
+        ${sf.map((m,i)=>matchBox(m,'SF'+(i+1))).join('')}
+      </div>
+      <div class="b-col">
+        <div class="b-round-lbl">Final</div>
+        ${fi.map(m=>matchBox(m,'Final')).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Confetti for victory
+  function startConfetti(){
+    const cv = document.getElementById('confetti-cv');
+    if(!cv) return;
+    cv.width=window.innerWidth; cv.height=window.innerHeight;
+    const ctx=cv.getContext('2d');
+    const bits=Array.from({length:120},()=>({
+      x:Math.random()*cv.width, y:Math.random()*-cv.height,
+      vx:(Math.random()-0.5)*3, vy:2+Math.random()*3,
+      col:['#c8a84b','#4b8bc8','#ff4444','#44ff88','#ff88ff'][Math.random()*5|0],
+      r:Math.random()*6+3, spin:Math.random()*0.2
+    }));
+    let frame=0;
+    function tick(){
+      if(frame++>300){ctx.clearRect(0,0,cv.width,cv.height);return;}
+      ctx.clearRect(0,0,cv.width,cv.height);
+      for(const b of bits){
+        b.x+=b.vx; b.y+=b.vy; b.vy+=0.05;
+        if(b.y>cv.height){b.y=-10;b.x=Math.random()*cv.width;}
+        ctx.fillStyle=b.col; ctx.beginPath();
+        ctx.ellipse(b.x,b.y,b.r,b.r*0.5,b.spin*frame,0,Math.PI*2); ctx.fill();
+      }
+      requestAnimationFrame(tick);
+    }
+    tick();
+  }
+
+  return { begin, startTournament, startNextMatch, onMatchEnd, _currentOpp:null, state, CPU_ROSTER };
+})();
+
+// ── TOURNAMENT PLAYER CREATE (no templates) ──────────────────────
+const TPC = {
+  get stats(){ return PC.stats; },  // share stats object with PC
+  init(){
+    // Reuse PC skin/kit selection, just re-render into tournament elements
+    document.getElementById('tskin-row').innerHTML =
+      PC.skins.map((s,i)=>`<div class="sdot${i===PC.skinI?' on':''}" style="background:${s}" onclick="PC.setSkin(${i});TPC.sync()"></div>`).join('');
+    document.getElementById('tkit-row').innerHTML =
+      PC.kits.map((k,i)=>`<div class="ksw${i===PC.kitI?' on':''}" style="background:${k}" onclick="PC.setKit(${i});TPC.sync()"></div>`).join('');
+    this.renderStats();
+    this.drawAv();
+  },
+  renderStats(){
+    document.getElementById('tstat-rows').innerHTML = PC.keys.map(k=>`
+      <div class="stat-row">
+        <div class="slr">
+          <span class="sn">${PC.names[k]}</span>
+          <span class="sv" id="tsv-${k}">${PC.stats[k]}★</span>
+        </div>
+        <div class="star-r" id="tsr-${k}">${this._starH(k)}</div>
+      </div>`).join('');
+  },
+  _starH(k){
+    let h=''; const v=PC.stats[k];
+    for(let i=1;i<=5;i++){
+      let cl=v>=i?'sf':v>=i-0.5?'sh':'se';
+      h+=`<div class="star" onclick="PC.setStar('${k}',${i},'f');TPC.sync()" oncontextmenu="event.preventDefault();PC.setStar('${k}',${i-0.5},'h');TPC.sync()">
+        <svg viewBox="0 0 24 24"><polygon class="${cl}" points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke-width="1.5"/></svg>
+      </div>`;
+    }
+    return h;
+  },
+  sync(){ this.renderStats(); this.drawAv(); },
+  drawAv(){
+    const cv=document.getElementById('tav'); if(!cv) return;
+    const cx=cv.getContext('2d'),W=cv.width,H=cv.height;
+    cx.clearRect(0,0,W,H);
+    drawFigure(cx,W/2,H-20,1.0,PC.skins[PC.skinI],PC.kits[PC.kitI],'idle',0,false,false,true);
+  },
+};
+
+// ── BRACKET CSS ─────────────────────────────────────────────────
+(()=>{
+  const s=document.createElement('style');
+  s.textContent=`
+.bracket-wrap{display:flex;gap:2rem;align-items:flex-start;min-width:500px;}
+.b-col{display:flex;flex-direction:column;gap:.7rem;flex:1;}
+.b-round-lbl{font-family:var(--font-h);font-size:.72rem;font-weight:700;letter-spacing:.15em;
+  color:var(--accent);text-transform:uppercase;margin-bottom:.2rem;}
+.bm{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;padding:.6rem .8rem;display:flex;flex-direction:column;gap:.3rem;}
+.bm-next{border-color:var(--accent);box-shadow:0 0 12px rgba(200,168,75,.25);}
+.bm-done{opacity:.7;}
+.bm-label{font-size:.6rem;letter-spacing:.12em;color:var(--mid);font-family:var(--font-h);text-transform:uppercase;}
+.bp{font-family:var(--font-h);font-size:.88rem;font-weight:600;color:var(--white);
+  padding:.15rem .4rem;border-radius:4px;transition:background .15s;}
+.bp-you{color:var(--accent);}
+.bw{background:rgba(200,168,75,.18);color:var(--accent);}
+.bm-winner{font-size:.68rem;color:var(--mid);margin-top:.1rem;}
+`;
+  document.head.appendChild(s);
 })();
 
 // ── BOOT ────────────────────────────────────────────────────────
