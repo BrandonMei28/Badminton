@@ -984,7 +984,7 @@ const Game = {
       tgtX:-0.12, tgtZ:0.335,
       reactT:0, decided:false, willMiss:false, hitCD:0, serveT:0, graceT:0,
       jumpY:0, jumpVY:0, isJumping:false, jumpFalling:false, willSmash:false,
-      letLandDecided:null,
+      letLandDecided:null, lobLandX:null, lobLandZ:null,
     };
     // Tournament: use opponent's skin/kit/special flags
     if(this.cfg.tournOpp){
@@ -1397,11 +1397,12 @@ const Game = {
     switch(key){
       case 'r': // Lob
         type='lob';
-        // Lob must always land near the CPU baseline (z=0.02–0.18)
-        // Depth aim: W=deeper toward back, S=slightly shorter, default=deep
-        tz   = aimDepth==='w' ? 0.05 : aimDepth==='s' ? 0.15 : 0.08+rn(0,.04);
-        // Clamp so shot always lands in CPU half, well inside baseline
-        tz   = clamp(tz, 0.03, 0.18);
+        // Lob must always land near the CPU baseline (z≈0.04–0.10)
+        // Mirror of CPU lob which lands at z≈0.88–0.94 near player baseline
+        // Depth aim: W=deepest (very near back baseline), S=slightly less deep, default=deep
+        tz   = aimDepth==='w' ? 0.04 : aimDepth==='s' ? 0.09 : clamp(0.06+rn(-0.02,0.02), 0.04, 0.10);
+        // Clamp so shot always lands deep in CPU half, near back baseline
+        tz   = clamp(tz, 0.03, 0.10);
         // Peak scales with distance so near-net lobs don't get excessive velocity
         // Minimum distance from player to target gives natural arc height
         peak = 0.55; // fixed — net clearance boost handles the rest
@@ -1445,7 +1446,7 @@ const Game = {
           if(mishap < 0.40){ type='drop'; peak=0.07; tz=0.499; }      // clips net
           else { type='lob'; peak=0.55; tz=0.16+rn(0,0.06); }         // high easy lob
         } else if(type==='lob'){
-          tz = 0.22 + rn(0, 0.06); peak=0.60;                          // short lob = smashable
+          tz = 0.14 + rn(0, 0.06); peak=0.60;                          // short lob = smashable
         } else {
           // Normal: wide or long out
           const goOut = Math.random();
@@ -1462,7 +1463,7 @@ const Game = {
         type='normal'; tz=0.499; peak=0.04; errX=0.02; errZ=0.01;
       } else if(mishap < 0.72){
         // Very high, slow lob — CPU will smash
-        type='lob'; tz=0.18+rn(0,0.07); peak=1.0; errX=0.03; errZ=0.02;
+        type='lob'; tz=0.12+rn(0,0.07); peak=1.0; errX=0.03; errZ=0.02;
       } else {
         // Hits way out
         errX = 0.35 + rn(0, 0.14);
@@ -1477,7 +1478,7 @@ const Game = {
     const tzF = type==='smash'
       ? clamp(tz + rn(-errZ, errZ), 0.33, 0.46)
       : type==='lob'
-        ? clamp(tz + rn(-errZ, errZ), 0.02, 0.46)  // lob: strictly inside CPU half
+        ? clamp(tz + rn(-errZ, errZ), 0.02, 0.12)  // lob: deep near CPU baseline
         : clamp(tz + rn(-errZ, errZ), 0.02, 0.48);
 
     this.fireShuttle('p', P.wx, P.wz, tx, tzF, peak, type);
@@ -1504,34 +1505,60 @@ const Game = {
         C.tgtX = C.wx; C.tgtZ = C.wz;
       } else {
         const isServe = SH.shotType === 'serve';
-        // Serve: react immediately (no delay), never deliberately miss
-        if(isServe) C.reactT = 0;
-        else C.reactT -= dt;
+        const isIncomingLob = SH.shotType === 'lob';
 
-        if(C.reactT <= 0){
-          const err = dcfg.errX;
-          const shouldMiss = !isServe && Math.random() < dcfg.missP;
-          if(shouldMiss){
-            C.tgtX = rn(-0.35, 0.35);
-            C.tgtZ = 0.20 + rn(-0.08, 0.08);
-            C.willMiss = true;
-          } else {
-            const lookahead = Math.min(0.4, SH.wy > 0 ? SH.wy/Math.max(0.01,Math.abs(SH.vy)) : 0.3);
-            const predX = clamp(SH.wx + SH.vx * lookahead, -0.44, 0.44);
-            const predZ = clamp(SH.wz + SH.vz * lookahead, 0.04, 0.46);
-            const isIncomingLob = SH.shotType === 'lob' && SH.wy > 0.18;
-            if(isIncomingLob && Math.random() < dcfg.smashP){
-              C.tgtX = clamp(predX + rn(-err, err), -0.42, 0.42);
-              C.tgtZ = clamp(predZ * 0.6 + 0.38 * 0.4, 0.30, 0.45);
-              C.willSmash = true;
+        // For lobs: predict landing spot ONCE and lock onto it — prevents per-frame jitter
+        if(isIncomingLob){
+          if(C.lobLandX == null){
+            // Simulate shuttle trajectory to find exact landing spot
+            let lx=SH.wx, lz=SH.wz, ly=SH.wy, lvx=SH.vx, lvz=SH.vz, lvy=SH.vy;
+            const g2=1.1, step=0.04;
+            for(let i=0;i<80;i++){
+              lx+=lvx*step; lz+=lvz*step; ly+=lvy*step; lvy-=g2*step;
+              if(ly<=0) break;
+            }
+            const err = dcfg.errX;
+            const shouldMiss = Math.random() < dcfg.missP;
+            if(shouldMiss){
+              C.lobLandX = rn(-0.35, 0.35);
+              C.lobLandZ = 0.20 + rn(-0.08, 0.08);
+              C.willMiss = true;
             } else {
+              C.lobLandX = clamp(lx + rn(-err, err), -0.42, 0.42);
+              C.lobLandZ = clamp(lz + rn(-err*0.4, err*0.4), 0.03, 0.46);
+              C.willSmash = Math.random() < dcfg.smashP;
+              C.willMiss  = false;
+            }
+          }
+          // Always move to locked landing spot — no per-frame drift
+          C.tgtX = C.lobLandX;
+          C.tgtZ = C.lobLandZ;
+        } else {
+          // Non-lob: clear any cached lob target
+          C.lobLandX = null; C.lobLandZ = null;
+
+          // Serve: react immediately (no delay), never deliberately miss
+          if(isServe) C.reactT = 0;
+          else C.reactT -= dt;
+
+          if(C.reactT <= 0){
+            const err = dcfg.errX;
+            const shouldMiss = !isServe && Math.random() < dcfg.missP;
+            if(shouldMiss){
+              C.tgtX = rn(-0.35, 0.35);
+              C.tgtZ = 0.20 + rn(-0.08, 0.08);
+              C.willMiss = true;
+            } else {
+              const lookahead = Math.min(0.4, SH.wy > 0 ? SH.wy/Math.max(0.01,Math.abs(SH.vy)) : 0.3);
+              const predX = clamp(SH.wx + SH.vx * lookahead, -0.44, 0.44);
+              const predZ = clamp(SH.wz + SH.vz * lookahead, 0.04, 0.46);
               C.tgtX = clamp(predX + rn(-err, err), -0.44, 0.44);
               C.tgtZ = clamp(predZ + rn(-err*0.4, err*0.4), 0.04, 0.46);
               C.willSmash = false;
+              C.willMiss = false;
             }
-            C.willMiss = false;
+            C.reactT = 0;
           }
-          C.reactT = 0;
         }
       } // end letLandDecided else
 
@@ -1581,7 +1608,15 @@ const Game = {
       const reach = SH.shotType==='smash' ? 0.22 : 0.22;
       const maxHeight = SH.shotType==='smash' ? 0.55 : 0.65;
       const sd = Math.sqrt((SH.wx-C.wx)**2 + (SH.wz-C.wz)**2);
-      if(sd < reach && SH.wy < maxHeight){
+
+      // For lobs: CPU must be near the landing zone (like the player must be under the circle)
+      let lobProximityOk = true;
+      if(SH.shotType === 'lob' && C.lobLandX != null){
+        const distToLand = Math.sqrt((C.wx-C.lobLandX)**2 + (C.wz-C.lobLandZ)**2);
+        lobProximityOk = distToLand < 0.24;
+      }
+
+      if(sd < reach && SH.wy < maxHeight && lobProximityOk){
 
         // Decide ONCE whether this shot will be out/net — cache result to avoid per-frame jitter
         if(C.letLandDecided === undefined || C.letLandDecided === null){
@@ -1605,7 +1640,10 @@ const Game = {
       }
     }
     // Reset letLandDecided when shuttle is no longer coming
-    if(!shuttleComingToCPU) C.letLandDecided = null;
+    if(!shuttleComingToCPU){
+      C.letLandDecided = null;
+      C.lobLandX = null; C.lobLandZ = null;
+    }
   },
 
   cpuHit(dcfg){
