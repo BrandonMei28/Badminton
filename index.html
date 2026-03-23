@@ -388,10 +388,10 @@ button,input,select,.btn,.so{touch-action:manipulation;-webkit-tap-highlight-col
       <div class="sg-g">
         <div class="sg-l">Players</div>
         <div class="so on" data-g="tplayers" data-v="8"  onclick="Setup.pick(this);Setup.updateTSetupLabel()">
-          <div class="sol ts-sol">8 Players</div><div class="sos">Quarter Finals Start</div>
+          <div class="sol ts-sol">8 Players</div><div class="sos"></div>
         </div>
         <div class="so"    data-g="tplayers" data-v="16" onclick="Setup.pick(this);Setup.updateTSetupLabel()">
-          <div class="sol ts-sol">16 Players</div><div class="sos">Round of 16 Start</div>
+          <div class="sol ts-sol">16 Players</div><div class="sos"></div>
         </div>
       </div>
       <!-- col 2: CPU Difficulty -->
@@ -631,7 +631,7 @@ const Setup = {
   updateTSetupLabel(){
     const n = this.tplayers;
     document.getElementById('tsetup-fs').textContent =
-      n===16 ? '16-Player Single Elimination — Round of 16' : '8-Player Single Elimination — Quarter Finals';
+      n===16 ? '16-Player Single Elimination Format' : '8-Player Single Elimination Format';
   }
 };
 
