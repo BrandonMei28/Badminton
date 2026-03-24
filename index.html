@@ -3183,8 +3183,8 @@ const Tourn = (() => {
     const champName = champion?.isHuman ? 'You' : (champion?.name||'Unknown');
 
     document.getElementById('tout-msg').textContent =
-      state.humanEliminated ? `You were eliminated. The tournament continued without you.`
-                            : 'You were defeated in the Final.';
+      state.humanEliminated ? `You Were Eliminated.`
+                            : 'You Were Defeated In The Final.';
 
     const sub = document.getElementById('tout-sub');
     sub.innerHTML = `<strong style="color:var(--accent)">🏆 Champion: ${champName}</strong>`;
