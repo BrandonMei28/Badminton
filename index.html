@@ -1052,18 +1052,16 @@ const Game = {
     const shuttleHigh = SH.wy > 0.15;
 
     if(isSmashable && shuttleInPlayerHalf && shuttleHigh){
-      // Compute where shuttle will land
-      let ax=SH.wx, az=SH.wz, ay=SH.wy, avz=SH.vz, avx=SH.vx, avy=SH.vy;
-      const g=1.1, dt2=0.05;
-      for(let s=0;s<40;s++){
-        ax+=avx*dt2; az+=avz*dt2; ay+=avy*dt2; avy-=g*dt2;
-        if(ay<=0) break;
+      // Landing point is pre-cached at fire time in fireShuttle — just read it here.
+      // No re-simulation needed, so canSmash is stable and the indicator never jitters.
+      if(this.smashLandX != null){
+        const distToLand = Math.sqrt((P.wx-this.smashLandX)**2 + (P.wz-this.smashLandZ)**2);
+        this.canSmash = distToLand < 0.24;
       }
-      const distToLand = Math.sqrt((P.wx-ax)**2 + (P.wz-az)**2);
-      this.canSmash = distToLand < 0.24;
-      this.smashLandX = ax; this.smashLandZ = az;
-    } else if(this.canSmash && (SH.wy <= 0 || SH.state!=='flying')){
-      this.canSmash = false;
+    } else {
+      if(SH.wy <= 0 || SH.state!=='flying'){
+        this.canSmash = false;
+      }
     }
     this.smashPulse = (this.smashPulse||0) + 0.12;
   },
@@ -1864,6 +1862,22 @@ const Game = {
     SH.vx=dx/time; SH.vz=dz/time;
     SH.vy=vy0;
     SH.state='flying'; SH.owner=owner; SH.shotType=type; SH.trail=[];
+
+    // For lob shots: pre-compute and cache the exact landing point at fire time.
+    // Drawing uses this cached value so the indicator is perfectly still (no per-frame drift).
+    if(type === 'lob'){
+      let lx=fx, lz=fz, ly=0.03, lvx=SH.vx, lvz=SH.vz, lvy=vy0;
+      const lg2=1.1, lstep=0.04;
+      for(let i=0;i<120;i++){
+        lx+=lvx*lstep; lz+=lvz*lstep; ly+=lvy*lstep; lvy-=lg2*lstep;
+        if(ly<=0) break;
+      }
+      this.smashLandX = lx; this.smashLandZ = lz;
+      this._landToken = owner + '|lob|cached';
+    } else {
+      this.smashLandX = null; this.smashLandZ = null;
+      this._landToken = null;
+    }
   },
 
   updateShuttle(dt){
@@ -1889,12 +1903,14 @@ const Game = {
     if(SH.owner==='c'&&SH.vz>0&&SH.wz>=0.495&&SH.wz<=0.512){
       if(SH.wy<NET_H){this.netFault();return;}
     }
-    if(Math.abs(SH.wx)>0.51){this.fault();return;}
+    // Singles sideline: out if beyond the singles boundary (±0.4246) while airborne
+    if(Math.abs(SH.wx)>0.4246){this.fault();return;}
 
     if(SH.wy<=0){
       SH.wy=0;
       if(this.gstate!=='rally') return; // already scored
-      const inB=Math.abs(SH.wx)<0.5&&SH.wz>0.01&&SH.wz<0.99;
+      // Singles rules: in-bounds width is ±0.4246 (singles sidelines), full baseline-to-baseline length
+      const inB=Math.abs(SH.wx)<=0.4246&&SH.wz>0.01&&SH.wz<0.99;
       const cpuH=SH.wz<0.5, plH=SH.wz>=0.5;
       if(SH.owner==='p') this.scorePoint(cpuH&&inB?'p':'c');
       else               this.scorePoint(plH&&inB?'c':'p');
@@ -2532,8 +2548,11 @@ const Game = {
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Landing zone — bigger, colour shows if player can smash
-      const landPt=this.w2s(ax,az,0);
+      // Landing zone — always use the cached landing point (pre-computed at fire time).
+      // This keeps the indicator perfectly still throughout the shot's flight.
+      const landWx = (this.smashLandX != null) ? this.smashLandX : ax;
+      const landWz = (this.smashLandZ != null) ? this.smashLandZ : az;
+      const landPt=this.w2s(landWx,landWz,0);
       if(isFinite(landPt.x)&&isFinite(landPt.y)){
         const canSmashNow = this.canSmash;
         const pulse2=0.55+0.45*Math.sin((this.smashPulse||0)*0.14);
